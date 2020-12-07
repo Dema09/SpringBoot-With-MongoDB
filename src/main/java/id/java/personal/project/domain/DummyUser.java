@@ -17,6 +17,7 @@ public class DummyUser implements Serializable {
     private String password;
     private String address;
     private String phoneNumber;
+    private String profilePicture;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date dateOfBirth;
@@ -76,6 +77,14 @@ public class DummyUser implements Serializable {
 
     public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 }
 
