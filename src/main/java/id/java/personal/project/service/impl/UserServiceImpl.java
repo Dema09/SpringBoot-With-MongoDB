@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
         convertProfilePicture(profileDTO.getProfilePicture().getBytes(), profileDTO.getProfilePicture());
 
         userRepository.save(currentUser);
-        return AppConstant.SUCCESS_UPDATED_USER_DATA_PROFILE + currentUser.getId();
+        return AppConstant.SUCCESS_UPDATED_USER_DATA_PROFILE.getMessage() + currentUser.getId();
 
     }
 
