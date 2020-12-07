@@ -1,7 +1,5 @@
 package id.java.personal.project.dto.request;
 
-import java.util.Date;
-
 public class RegisterDTO {
     private String username;
     private String password;
