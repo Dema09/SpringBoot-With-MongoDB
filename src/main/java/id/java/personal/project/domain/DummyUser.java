@@ -2,11 +2,13 @@ package id.java.personal.project.domain;
 
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Document(collection = "user_data")
 public class DummyUser implements Serializable {
@@ -16,19 +18,25 @@ public class DummyUser implements Serializable {
     private String username;
     private String password;
     private String address;
+    private String email;
     private String phoneNumber;
     private String profilePicture;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date dateOfBirth;
 
+    @DBRef
+    private DummyUserRole dummyUserRole;
 
-    public DummyUser(String username, String password, String address, String phoneNumber, Date dateOfBirth) {
+
+    public DummyUser(String username, String password, String address, String email, String phoneNumber, Date dateOfBirth, DummyUserRole dummyUserRole) {
         this.username = username;
         this.password = password;
         this.address = address;
+        this.email = email;
         this.phoneNumber = phoneNumber;
         this.dateOfBirth = dateOfBirth;
+        this.dummyUserRole = dummyUserRole;
     }
 
     public String getId() {
@@ -63,6 +71,14 @@ public class DummyUser implements Serializable {
         this.address = address;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -85,6 +101,14 @@ public class DummyUser implements Serializable {
 
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
+    }
+
+    public DummyUserRole getDummyUserRole() {
+        return dummyUserRole;
+    }
+
+    public void setDummyUserRole(DummyUserRole dummyUserRole) {
+        this.dummyUserRole = dummyUserRole;
     }
 }
 

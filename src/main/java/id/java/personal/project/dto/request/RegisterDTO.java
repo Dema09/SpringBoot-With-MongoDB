@@ -4,6 +4,7 @@ public class RegisterDTO {
     private String username;
     private String password;
     private String address;
+    private String email;
     private String phoneNumber;
     private String dateOfBirth;
 
@@ -45,5 +46,13 @@ public class RegisterDTO {
 
     public void setDateOfBirth(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
