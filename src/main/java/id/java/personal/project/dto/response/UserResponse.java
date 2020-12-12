@@ -1,10 +1,11 @@
 package id.java.personal.project.dto.response;
 
-public class UserResponse {
+public abstract class UserResponse {
     private String userId;
     private String username;
     private String address;
-    private Integer userAge;
+    private String userRole;
+
 
     public String getUserId() {
         return userId;
@@ -30,11 +31,11 @@ public class UserResponse {
         this.address = address;
     }
 
-    public Integer getUserAge() {
-        return userAge;
+    public String getUserRole() {
+        return userRole;
     }
 
-    public void setUserAge(Integer userAge) {
-        this.userAge = userAge;
+    public void setUserRole(String userRole) {
+        this.userRole = userRole;
     }
 }

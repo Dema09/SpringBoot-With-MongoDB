@@ -4,8 +4,10 @@ public class RegisterDTO {
     private String username;
     private String password;
     private String address;
+    private String email;
     private String phoneNumber;
     private String dateOfBirth;
+    private String role;
 
     public String getUsername() {
         return username;
@@ -45,5 +47,21 @@ public class RegisterDTO {
 
     public void setDateOfBirth(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
