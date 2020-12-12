@@ -7,7 +7,8 @@ public enum AppConstant {
     SUCCESS_UPDATED_USER_DATA_PROFILE("Successfully Updating Profile with Id: "),
     IMAGE_NOT_FOUND_OR_CORRUPTED("Can't retrieve your image, or image might be corrupted!"),
     INCORRECT_USERNAME("Incorrect username. Please input your valid username!"),
-    INCORRECT_PASSWORD("Incorrect Password. Please input your valid password!");
+    INCORRECT_PASSWORD("Incorrect Password. Please input your valid password!"),
+    ALPHA_NUMERIC_STRING("ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "0123456789" + "abcdefghijklmnopqrstuvwxyz"),;
 
     private String message;
 

@@ -34,6 +34,7 @@ public class AdminServiceImpl implements AdminService {
         userResponseWithAge.setUserId(currentDummyUser.getId());
         userResponseWithAge.setUsername(currentDummyUser.getUsername());
         userResponseWithAge.setAddress(currentDummyUser.getAddress());
+        userResponseWithAge.setUserRole(currentDummyUser.getDummyUserRole().getUserRole());
         userResponseWithAge.setUserAge(calculateUserAge(currentDummyUser.getDateOfBirth()));
 
         return statusResponse.statusOk(userResponseWithAge);

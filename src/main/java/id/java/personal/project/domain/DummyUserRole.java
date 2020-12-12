@@ -1,6 +1,5 @@
 package id.java.personal.project.domain;
 
-import id.java.personal.project.constant.RoleEnum;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -9,7 +8,7 @@ public class DummyUserRole {
 
     @Id
     private String id;
-    private RoleEnum userRole;
+    private String userRole;
 
     public String getId() {
         return id;
@@ -19,11 +18,11 @@ public class DummyUserRole {
         this.id = id;
     }
 
-    public RoleEnum getUserRole() {
+    public String getUserRole() {
         return userRole;
     }
 
-    public void setUserRole(RoleEnum userRole) {
+    public void setUserRole(String userRole) {
         this.userRole = userRole;
     }
 }

@@ -4,6 +4,7 @@ public abstract class UserResponse {
     private String userId;
     private String username;
     private String address;
+    private String userRole;
 
 
     public String getUserId() {
@@ -30,5 +31,11 @@ public abstract class UserResponse {
         this.address = address;
     }
 
+    public String getUserRole() {
+        return userRole;
+    }
 
+    public void setUserRole(String userRole) {
+        this.userRole = userRole;
+    }
 }

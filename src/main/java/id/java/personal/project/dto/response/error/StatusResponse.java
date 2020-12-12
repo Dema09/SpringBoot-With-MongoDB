@@ -80,4 +80,14 @@ public class StatusResponse extends BaseResponse {
         );
         return statusResponse;
     }
+
+    public StatusResponse statusBadRequest(String message, Object data){
+        StatusResponse statusResponse = new StatusResponse(
+                HttpStatus.BAD_REQUEST,
+                StatusConstant.BAD_REQUEST.getMessage(),
+                message,
+                null
+        );
+        return statusResponse;
+    }
 }

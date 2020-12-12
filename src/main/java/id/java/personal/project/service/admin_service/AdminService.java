@@ -7,5 +7,4 @@ import org.springframework.stereotype.Service;
 public interface AdminService {
 
     StatusResponse getUserDataByUserId(String userId);
-
 }

@@ -5,7 +5,8 @@ public enum StatusConstant {
     NOT_FOUND("Not Found"),
     OK("Ok"),
     UNAUTHORIZED("Unauthorized"),
-    CREATED("Created");
+    CREATED("Created"),
+    BAD_REQUEST("Bad Request");
 
     private String message;
 
