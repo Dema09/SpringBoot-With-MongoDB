@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
 
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/admin")
 public class admin_controller {
     private final AdminService adminService;
 

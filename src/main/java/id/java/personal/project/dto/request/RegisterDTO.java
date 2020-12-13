@@ -7,7 +7,6 @@ public class RegisterDTO {
     private String email;
     private String phoneNumber;
     private String dateOfBirth;
-    private String role;
 
     public String getUsername() {
         return username;
@@ -57,11 +56,4 @@ public class RegisterDTO {
         this.email = email;
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
 }
