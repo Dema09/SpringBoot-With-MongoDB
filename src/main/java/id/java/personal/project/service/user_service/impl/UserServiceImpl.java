@@ -1,6 +1,6 @@
 package id.java.personal.project.service.user_service.impl;
 
-import id.java.personal.project.constant.AppConstant;
+import id.java.personal.project.constant.AppEnum;
 import id.java.personal.project.constant.RoleEnum;
 import id.java.personal.project.dao.RoleRepository;
 import id.java.personal.project.dao.UserRepository;
@@ -34,7 +34,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -46,7 +45,7 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final JwtUtils jwtUtils;
 
-    SimpleDateFormat sdf = new SimpleDateFormat(AppConstant.DATE_FORMAT.getMessage());
+    SimpleDateFormat sdf = new SimpleDateFormat(AppEnum.DATE_FORMAT.getMessage());
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
@@ -78,7 +77,7 @@ public class UserServiceImpl implements UserService {
                 userRole);
 
         userRepository.save(dummyUser);
-        return statusResponse.statusCreated(AppConstant.SUCCESS_REGISTER_USER.getMessage() + registerDTO.getUsername(), "Id: " + dummyUser.getId());
+        return statusResponse.statusCreated(AppEnum.SUCCESS_REGISTER_USER.getMessage(), "Id: " + dummyUser.getId());
     }
 
 
@@ -96,7 +95,7 @@ public class UserServiceImpl implements UserService {
         convertProfilePicture(profileDTO.getProfilePicture().getBytes(), profileDTO.getProfilePicture());
 
         userRepository.save(currentUser);
-        return statusResponse.statusOk(AppConstant.SUCCESS_UPDATED_USER_DATA_PROFILE.getMessage() + currentUser.getId());
+        return statusResponse.statusOk(AppEnum.SUCCESS_UPDATED_USER_DATA_PROFILE.getMessage() + currentUser.getId());
 
     }
 
@@ -145,7 +144,7 @@ public class UserServiceImpl implements UserService {
     private String getImage(String profilePicture) throws IOException {
         File file = new File(env.getProperty("profilePicturePath") + profilePicture);
         if(file == null)
-            throw new IOException(AppConstant.IMAGE_NOT_FOUND_OR_CORRUPTED.getMessage());
+            throw new IOException(AppEnum.IMAGE_NOT_FOUND_OR_CORRUPTED.getMessage());
 
         byte[] profileImageByte = Files.readAllBytes(file.toPath().toAbsolutePath());
         String encodedImage = Base64.getEncoder().encodeToString(profileImageByte);

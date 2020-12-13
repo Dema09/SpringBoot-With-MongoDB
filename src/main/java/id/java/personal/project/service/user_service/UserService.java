@@ -18,4 +18,5 @@ public interface UserService {
     StatusResponse getUserDataProfileById(String userId) throws IOException;
 
     StatusResponse loginUser(LoginDTO loginDTO);
+
 }

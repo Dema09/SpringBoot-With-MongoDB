@@ -1,5 +1,6 @@
 package id.java.personal.project.service.user_service.impl;
 
+import id.java.personal.project.constant.AppEnum;
 import id.java.personal.project.dao.UserRepository;
 import id.java.personal.project.domain.DummyUser;
 import id.java.personal.project.security.service.UserDetailsImpl;
@@ -22,7 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         DummyUser dummyUser = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("This Username: " + username + " is not exists!"));
+                .orElseThrow(() -> new UsernameNotFoundException(AppEnum.INCORRECT_USERNAME.getMessage()));
         return UserDetailsImpl.build(dummyUser);
     }
 }

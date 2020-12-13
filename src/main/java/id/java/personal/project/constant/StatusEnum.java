@@ -1,16 +1,17 @@
 package id.java.personal.project.constant;
 
-public enum StatusConstant {
+public enum StatusEnum {
     INTERNAL_SERVER_ERROR("Internal Server Error"),
     NOT_FOUND("Not Found"),
     OK("Ok"),
     UNAUTHORIZED("Unauthorized"),
     CREATED("Created"),
-    BAD_REQUEST("Bad Request");
+    BAD_REQUEST("Bad Request"),
+    CONFLICT("Conflict");
 
     private String message;
 
-    StatusConstant(String message) {
+    StatusEnum(String message) {
         this.message = message;
     }
 
