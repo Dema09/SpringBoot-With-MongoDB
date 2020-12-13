@@ -20,6 +20,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -120,21 +122,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public StatusResponse loginUser(LoginDTO loginDTO) {
         StatusResponse statusResponse = new StatusResponse();
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword()));
+        DummyUser userData = userRepository.findDummyUserByUsername(loginDTO.getUsername());
+
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(userData.getDummyUserRole().getUserRole()));
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword(), authorities));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities()
-                .stream().map(item -> item.getAuthority()).collect(Collectors.toList());
-
         LoginResponse loginResponse = new LoginResponse();
 
         loginResponse.setId(userDetails.getId());
         loginResponse.setUsername(userDetails.getUsername());
         loginResponse.setEmail(userDetails.getEmail());
-        loginResponse.setRoles(roles);
+        loginResponse.setRoles(userData.getDummyUserRole().getUserRole());
         loginResponse.setAccessToken(jwt);
 
         return statusResponse.statusOk(loginResponse);

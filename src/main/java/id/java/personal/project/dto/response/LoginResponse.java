@@ -6,7 +6,7 @@ public class LoginResponse {
     private String id;
     private String username;
     private String email;
-    private List<String> roles;
+    private String roles;
     private String accessToken;
 
     public String getId() {
@@ -33,11 +33,11 @@ public class LoginResponse {
         this.email = email;
     }
 
-    public List<String> getRoles() {
+    public String getRoles() {
         return roles;
     }
 
-    public void setRoles(List<String> roles) {
+    public void setRoles(String roles) {
         this.roles = roles;
     }
 

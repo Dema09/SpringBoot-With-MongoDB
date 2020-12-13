@@ -16,6 +16,7 @@ public class JwtUtils {
 
     private static final Logger logger = Logger.getLogger(JwtUtils.class.getName());
 
+    @Value("${spring.jwt.client.secret}")
     private String jwtSecret;
 
     @Value("${jwt.token.timeout}")
@@ -32,7 +33,7 @@ public class JwtUtils {
     public String generateJwtToken(Authentication authentication){
 
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-        setJwtSecret(generateSecretKey());
+        setJwtSecret(jwtSecret);
 
         return Jwts.builder()
                 .setSubject(userPrincipal.getUsername())
@@ -64,13 +65,13 @@ public class JwtUtils {
         return false;
     }
 
-    private String generateSecretKey(){
-        StringBuilder sb = new StringBuilder(32);
-        for(int i=0; i<32; i++){
-            int index = (int)(AppConstant.ALPHA_NUMERIC_STRING.getMessage().length() * Math.random());
-            sb.append(AppConstant.ALPHA_NUMERIC_STRING.getMessage().charAt(index));
-        }
-        return sb.toString();
-    }
+//    private String generateSecretKey(){
+//        StringBuilder sb = new StringBuilder(32);
+//        for(int i=0; i<32; i++){
+//            int index = (int)(AppConstant.ALPHA_NUMERIC_STRING.getMessage().length() * Math.random());
+//            sb.append(AppConstant.ALPHA_NUMERIC_STRING.getMessage().charAt(index));
+//        }
+//        return sb.toString();
+//    }
 
 }
