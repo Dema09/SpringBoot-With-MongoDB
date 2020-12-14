@@ -67,6 +67,10 @@ public class UserServiceImpl implements UserService {
     public StatusResponse insertUserData(RegisterDTO registerDTO) throws ParseException {
         StatusResponse statusResponse = new StatusResponse();
         DummyUserRole userRole = roleRepository.findDummyUserRoleByUserRole(RoleEnum.ROLE_USER.getMessage());
+        DummyUser checkUser = userRepository.findDummyUserByUsername(registerDTO.getUsername());
+
+        if(checkUser != null)
+            return statusResponse.statusConflict(AppEnum.THIS_USER_WITH_USERNAME.getMessage() + registerDTO.getUsername() + AppEnum.HAS_BEEN_EXISTS.getMessage(), null);
 
         DummyUser dummyUser = new DummyUser(registerDTO.getUsername(),
                 passwordEncoder.encode(registerDTO.getPassword()),
