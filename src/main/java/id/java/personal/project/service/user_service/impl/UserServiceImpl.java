@@ -2,10 +2,11 @@ package id.java.personal.project.service.user_service.impl;
 
 import id.java.personal.project.constant.AppEnum;
 import id.java.personal.project.constant.RoleEnum;
-import id.java.personal.project.dao.RoleRepository;
-import id.java.personal.project.dao.UserRepository;
+import id.java.personal.project.dao.*;
 import id.java.personal.project.domain.DummyUser;
 import id.java.personal.project.domain.DummyUserRole;
+import id.java.personal.project.domain.Follower;
+import id.java.personal.project.domain.FollowerAndFollowing;
 import id.java.personal.project.dto.request.LoginDTO;
 import id.java.personal.project.dto.request.ProfileDTO;
 import id.java.personal.project.dto.request.RegisterDTO;
@@ -43,6 +44,9 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final RoleRepository roleRepository;
+    private final FollowerAndFollowingRepository followerAndFollowingRepository;
+    private final FollowerRepository followerRepository;
+    private final FollowingRepository followingRepository;
     private final JwtUtils jwtUtils;
 
     SimpleDateFormat sdf = new SimpleDateFormat(AppEnum.DATE_FORMAT.getMessage());
@@ -53,6 +57,9 @@ public class UserServiceImpl implements UserService {
                            PasswordEncoder passwordEncoder,
                            AuthenticationManager authenticationManager,
                            RoleRepository roleRepository,
+                           FollowerAndFollowingRepository followerAndFollowingRepository,
+                           FollowerRepository followerRepository,
+                           FollowingRepository followingRepository,
                            JwtUtils jwtUtils
                            ) {
         this.userRepository = userRepository;
@@ -60,6 +67,9 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.roleRepository = roleRepository;
+        this.followerAndFollowingRepository = followerAndFollowingRepository;
+        this.followerRepository = followerRepository;
+        this.followingRepository = followingRepository;
         this.jwtUtils = jwtUtils;
     }
 
@@ -81,6 +91,11 @@ public class UserServiceImpl implements UserService {
                 userRole);
 
         userRepository.save(dummyUser);
+
+        FollowerAndFollowing followerAndFollowing = new FollowerAndFollowing();
+        followerAndFollowing.setDummyUser(dummyUser);
+        followerAndFollowingRepository.save(followerAndFollowing);
+
         return statusResponse.statusCreated(AppEnum.SUCCESS_REGISTER_USER.getMessage(), "Id: " + dummyUser.getId());
     }
 

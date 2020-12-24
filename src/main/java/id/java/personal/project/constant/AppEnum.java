@@ -10,7 +10,10 @@ public enum AppEnum {
     INCORRECT_PASSWORD("Incorrect Password. Please input your valid password!"),
     ALPHA_NUMERIC_REGEX("ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "0123456789" + "abcdefghijklmnopqrstuvwxyz"),
     THIS_USER_WITH_USERNAME("This user with username: "),
-    HAS_BEEN_EXISTS(" has been exists!");
+    USER_WITH_ID("This user with id: "),
+    HAS_BEEN_EXISTS(" has been exists!"),
+    IS_NOT_EXISTS(" is not exists!"),
+    SUCCESSFULLY_FOLLOWED_USER_WITH_USERNAME("Successfully followed user with username: ");
 
     private String message;
 
