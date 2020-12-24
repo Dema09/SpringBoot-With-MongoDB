@@ -1,12 +1,10 @@
 package id.java.personal.project.controller.user_controller;
 
-import id.java.personal.project.constant.AppConstant;
 import id.java.personal.project.dto.request.ProfileDTO;
 import id.java.personal.project.dto.request.RegisterDTO;
 import id.java.personal.project.dto.response.error.StatusResponse;
 import id.java.personal.project.service.user_service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,11 +1,12 @@
 package id.java.personal.project.service.user_service.impl;
 
-import id.java.personal.project.constant.AppConstant;
+import id.java.personal.project.constant.AppEnum;
 import id.java.personal.project.constant.RoleEnum;
-import id.java.personal.project.dao.RoleRepository;
-import id.java.personal.project.dao.UserRepository;
+import id.java.personal.project.dao.*;
 import id.java.personal.project.domain.DummyUser;
 import id.java.personal.project.domain.DummyUserRole;
+import id.java.personal.project.domain.Follower;
+import id.java.personal.project.domain.FollowerAndFollowing;
 import id.java.personal.project.dto.request.LoginDTO;
 import id.java.personal.project.dto.request.ProfileDTO;
 import id.java.personal.project.dto.request.RegisterDTO;
@@ -34,7 +35,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -44,9 +44,12 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final RoleRepository roleRepository;
+    private final FollowerAndFollowingRepository followerAndFollowingRepository;
+    private final FollowerRepository followerRepository;
+    private final FollowingRepository followingRepository;
     private final JwtUtils jwtUtils;
 
-    SimpleDateFormat sdf = new SimpleDateFormat(AppConstant.DATE_FORMAT.getMessage());
+    SimpleDateFormat sdf = new SimpleDateFormat(AppEnum.DATE_FORMAT.getMessage());
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
@@ -54,6 +57,9 @@ public class UserServiceImpl implements UserService {
                            PasswordEncoder passwordEncoder,
                            AuthenticationManager authenticationManager,
                            RoleRepository roleRepository,
+                           FollowerAndFollowingRepository followerAndFollowingRepository,
+                           FollowerRepository followerRepository,
+                           FollowingRepository followingRepository,
                            JwtUtils jwtUtils
                            ) {
         this.userRepository = userRepository;
@@ -61,6 +67,9 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.roleRepository = roleRepository;
+        this.followerAndFollowingRepository = followerAndFollowingRepository;
+        this.followerRepository = followerRepository;
+        this.followingRepository = followingRepository;
         this.jwtUtils = jwtUtils;
     }
 
@@ -68,6 +77,10 @@ public class UserServiceImpl implements UserService {
     public StatusResponse insertUserData(RegisterDTO registerDTO) throws ParseException {
         StatusResponse statusResponse = new StatusResponse();
         DummyUserRole userRole = roleRepository.findDummyUserRoleByUserRole(RoleEnum.ROLE_USER.getMessage());
+        DummyUser checkUser = userRepository.findDummyUserByUsername(registerDTO.getUsername());
+
+        if(checkUser != null)
+            return statusResponse.statusConflict(AppEnum.THIS_USER_WITH_USERNAME.getMessage() + registerDTO.getUsername() + AppEnum.HAS_BEEN_EXISTS.getMessage(), null);
 
         DummyUser dummyUser = new DummyUser(registerDTO.getUsername(),
                 passwordEncoder.encode(registerDTO.getPassword()),
@@ -78,7 +91,12 @@ public class UserServiceImpl implements UserService {
                 userRole);
 
         userRepository.save(dummyUser);
-        return statusResponse.statusCreated(AppConstant.SUCCESS_REGISTER_USER.getMessage() + registerDTO.getUsername(), "Id: " + dummyUser.getId());
+
+        FollowerAndFollowing followerAndFollowing = new FollowerAndFollowing();
+        followerAndFollowing.setDummyUser(dummyUser);
+        followerAndFollowingRepository.save(followerAndFollowing);
+
+        return statusResponse.statusCreated(AppEnum.SUCCESS_REGISTER_USER.getMessage(), "Id: " + dummyUser.getId());
     }
 
 
@@ -96,7 +114,7 @@ public class UserServiceImpl implements UserService {
         convertProfilePicture(profileDTO.getProfilePicture().getBytes(), profileDTO.getProfilePicture());
 
         userRepository.save(currentUser);
-        return statusResponse.statusOk(AppConstant.SUCCESS_UPDATED_USER_DATA_PROFILE.getMessage() + currentUser.getId());
+        return statusResponse.statusOk(AppEnum.SUCCESS_UPDATED_USER_DATA_PROFILE.getMessage() + currentUser.getId());
 
     }
 
@@ -109,10 +127,15 @@ public class UserServiceImpl implements UserService {
         if(currentUser == null)
             return statusResponse.statusNotFound("Data with id: " + userId + " is not exists!", null);
 
+        FollowerAndFollowing followerAndFollowing = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(currentUser);
+
         profileResponse.setUserId(currentUser.getId());
         profileResponse.setUsername(currentUser.getUsername());
         profileResponse.setAddress(currentUser.getAddress());
-        profileResponse.setUserProfilePicture(getImage(currentUser.getProfilePicture()));
+        profileResponse.setUserProfilePicture(currentUser.getProfilePicture() == null ? "" : getImage(currentUser.getProfilePicture()));
+        profileResponse.setUserRole(currentUser.getDummyUserRole().getUserRole());
+        profileResponse.setNumberOfFollowers(followerAndFollowing.getFollowers().size());
+        profileResponse.setNumberOfFollowings(followerAndFollowing.getFollowings().size());
 
         return statusResponse.statusOk(profileResponse);
     }
@@ -145,7 +168,7 @@ public class UserServiceImpl implements UserService {
     private String getImage(String profilePicture) throws IOException {
         File file = new File(env.getProperty("profilePicturePath") + profilePicture);
         if(file == null)
-            throw new IOException(AppConstant.IMAGE_NOT_FOUND_OR_CORRUPTED.getMessage());
+            throw new IOException(AppEnum.IMAGE_NOT_FOUND_OR_CORRUPTED.getMessage());
 
         byte[] profileImageByte = Files.readAllBytes(file.toPath().toAbsolutePath());
         String encodedImage = Base64.getEncoder().encodeToString(profileImageByte);

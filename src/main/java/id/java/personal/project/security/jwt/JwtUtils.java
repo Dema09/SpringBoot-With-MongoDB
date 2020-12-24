@@ -1,6 +1,5 @@
 package id.java.personal.project.security.jwt;
 
-import id.java.personal.project.constant.AppConstant;
 import id.java.personal.project.security.service.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import org.apache.log4j.Logger;

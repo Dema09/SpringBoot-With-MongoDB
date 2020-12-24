@@ -1,6 +1,6 @@
 package id.java.personal.project.dto.response.error;
 
-import id.java.personal.project.constant.StatusConstant;
+import id.java.personal.project.constant.StatusEnum;
 import org.springframework.http.HttpStatus;
 
 public class StatusResponse extends BaseResponse {
@@ -33,7 +33,7 @@ public class StatusResponse extends BaseResponse {
 
     public StatusResponse statusInternalServerError(String message, Object data){
         StatusResponse statusResponse = new StatusResponse(HttpStatus.INTERNAL_SERVER_ERROR,
-                StatusConstant.INTERNAL_SERVER_ERROR.getMessage(),
+                StatusEnum.INTERNAL_SERVER_ERROR.getMessage(),
                 message,
                 data
         );
@@ -44,7 +44,7 @@ public class StatusResponse extends BaseResponse {
     public StatusResponse statusNotFound(String message, Object data){
         StatusResponse statusResponse = new StatusResponse(
                 HttpStatus.NOT_FOUND,
-                StatusConstant.NOT_FOUND.getMessage(),
+                StatusEnum.NOT_FOUND.getMessage(),
                 message,
                 data
         );
@@ -54,7 +54,7 @@ public class StatusResponse extends BaseResponse {
     public StatusResponse statusOk(Object data){
         StatusResponse statusResponse = new StatusResponse(
                 HttpStatus.OK,
-                StatusConstant.OK.getMessage(),
+                StatusEnum.OK.getMessage(),
                 "Ok",
                 data
         );
@@ -64,7 +64,7 @@ public class StatusResponse extends BaseResponse {
     public StatusResponse statusCreated(String message, Object data){
         StatusResponse statusResponse = new StatusResponse(
                 HttpStatus.CREATED,
-                StatusConstant.CREATED.getMessage(),
+                StatusEnum.CREATED.getMessage(),
                 message,
                 data
         );
@@ -74,7 +74,7 @@ public class StatusResponse extends BaseResponse {
     public StatusResponse statusUnauthorized(String message, Object data){
         StatusResponse statusResponse = new StatusResponse(
           HttpStatus.UNAUTHORIZED,
-          StatusConstant.UNAUTHORIZED.getMessage(),
+          StatusEnum.UNAUTHORIZED.getMessage(),
           message,
           data
         );
@@ -84,9 +84,19 @@ public class StatusResponse extends BaseResponse {
     public StatusResponse statusBadRequest(String message, Object data){
         StatusResponse statusResponse = new StatusResponse(
                 HttpStatus.BAD_REQUEST,
-                StatusConstant.BAD_REQUEST.getMessage(),
+                StatusEnum.BAD_REQUEST.getMessage(),
                 message,
                 null
+        );
+        return statusResponse;
+    }
+
+    public StatusResponse statusConflict(String message, Object data){
+        StatusResponse statusResponse = new StatusResponse(
+                HttpStatus.CONFLICT,
+                StatusEnum.CONFLICT.getMessage(),
+                message,
+                data
         );
         return statusResponse;
     }

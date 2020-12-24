@@ -1,14 +1,15 @@
 package id.java.personal.project.domain;
 
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 @Document(collection = "user_data")
 public class DummyUser implements Serializable {
@@ -24,6 +25,12 @@ public class DummyUser implements Serializable {
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date dateOfBirth;
+
+    @CreatedDate
+    private Date createdAt;
+
+    @LastModifiedDate
+    private Date lastModified;
 
     @DBRef
     private DummyUserRole dummyUserRole;
@@ -109,6 +116,22 @@ public class DummyUser implements Serializable {
 
     public void setDummyUserRole(DummyUserRole dummyUserRole) {
         this.dummyUserRole = dummyUserRole;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
     }
 }
 
