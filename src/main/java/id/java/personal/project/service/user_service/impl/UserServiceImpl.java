@@ -127,10 +127,15 @@ public class UserServiceImpl implements UserService {
         if(currentUser == null)
             return statusResponse.statusNotFound("Data with id: " + userId + " is not exists!", null);
 
+        FollowerAndFollowing followerAndFollowing = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(currentUser);
+
         profileResponse.setUserId(currentUser.getId());
         profileResponse.setUsername(currentUser.getUsername());
         profileResponse.setAddress(currentUser.getAddress());
-        profileResponse.setUserProfilePicture(getImage(currentUser.getProfilePicture()));
+        profileResponse.setUserProfilePicture(currentUser.getProfilePicture() == null ? "" : getImage(currentUser.getProfilePicture()));
+        profileResponse.setUserRole(currentUser.getDummyUserRole().getUserRole());
+        profileResponse.setNumberOfFollowers(followerAndFollowing.getFollowers().size());
+        profileResponse.setNumberOfFollowings(followerAndFollowing.getFollowings().size());
 
         return statusResponse.statusOk(profileResponse);
     }

@@ -19,7 +19,6 @@ public class FollowerAndFollowingController {
 
     @PostMapping("/followingUser/{username}")
     private ResponseEntity followingUserByUsername(@PathVariable String username, @RequestHeader(value = "userId") String userId){
-
         StatusResponse followingUserResponse = followerAndFollowingService.followingUserByUsername(username, userId);
         return new ResponseEntity(followingUserResponse, followingUserResponse.getResponse());
     }
