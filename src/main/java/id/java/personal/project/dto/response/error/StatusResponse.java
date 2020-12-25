@@ -32,72 +32,73 @@ public class StatusResponse extends BaseResponse {
     }
 
     public StatusResponse statusInternalServerError(String message, Object data){
-        StatusResponse statusResponse = new StatusResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+        return new StatusResponse(HttpStatus.INTERNAL_SERVER_ERROR,
                 StatusEnum.INTERNAL_SERVER_ERROR.getMessage(),
                 message,
                 data
         );
-
-        return statusResponse;
     }
 
     public StatusResponse statusNotFound(String message, Object data){
-        StatusResponse statusResponse = new StatusResponse(
+        return new StatusResponse(
                 HttpStatus.NOT_FOUND,
                 StatusEnum.NOT_FOUND.getMessage(),
                 message,
                 data
         );
-        return statusResponse;
     }
 
     public StatusResponse statusOk(Object data){
-        StatusResponse statusResponse = new StatusResponse(
+        return new StatusResponse(
                 HttpStatus.OK,
                 StatusEnum.OK.getMessage(),
                 "Ok",
                 data
         );
-        return statusResponse;
     }
 
     public StatusResponse statusCreated(String message, Object data){
-        StatusResponse statusResponse = new StatusResponse(
+        return new StatusResponse(
                 HttpStatus.CREATED,
                 StatusEnum.CREATED.getMessage(),
                 message,
                 data
         );
-        return statusResponse;
     }
 
     public StatusResponse statusUnauthorized(String message, Object data){
-        StatusResponse statusResponse = new StatusResponse(
+        return new StatusResponse(
           HttpStatus.UNAUTHORIZED,
           StatusEnum.UNAUTHORIZED.getMessage(),
           message,
           data
         );
-        return statusResponse;
     }
 
     public StatusResponse statusBadRequest(String message, Object data){
-        StatusResponse statusResponse = new StatusResponse(
+        return new StatusResponse(
                 HttpStatus.BAD_REQUEST,
                 StatusEnum.BAD_REQUEST.getMessage(),
                 message,
                 null
         );
-        return statusResponse;
     }
 
     public StatusResponse statusConflict(String message, Object data){
-        StatusResponse statusResponse = new StatusResponse(
+        return new StatusResponse(
                 HttpStatus.CONFLICT,
                 StatusEnum.CONFLICT.getMessage(),
                 message,
                 data
         );
-        return statusResponse;
+    }
+
+    public StatusResponse statusNotModified(String message, Object data){
+        return new StatusResponse(
+                HttpStatus.NOT_MODIFIED,
+                StatusEnum.NOT_MODIFIED.getMessage(),
+                message,
+                data
+        );
     }
 }

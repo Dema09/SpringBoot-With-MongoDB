@@ -7,7 +7,9 @@ public enum StatusEnum {
     UNAUTHORIZED("Unauthorized"),
     CREATED("Created"),
     BAD_REQUEST("Bad Request"),
-    CONFLICT("Conflict");
+    CONFLICT("Conflict"),
+    NO_CONTENT("No Content"),
+    NOT_MODIFIED("Not Modified");
 
     private String message;
 
