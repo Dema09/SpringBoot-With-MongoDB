@@ -16,10 +16,10 @@ public class FollowerAndFollowing {
     private DummyUser dummyUser;
 
     @DBRef
-    private List<Follower> followers;
+    private List<DummyUser> followers;
 
     @DBRef
-    private List<Following> followings;
+    private List<DummyUser> followings;
 
     public String getFollowId() {
         return followId;
@@ -37,19 +37,19 @@ public class FollowerAndFollowing {
         this.dummyUser = dummyUser;
     }
 
-    public List<Follower> getFollowers() {
+    public List<DummyUser> getFollowers() {
         return followers;
     }
 
-    public void setFollowers(List<Follower> followers) {
+    public void setFollowers(List<DummyUser> followers) {
         this.followers = followers;
     }
 
-    public List<Following> getFollowings() {
+    public List<DummyUser> getFollowings() {
         return followings;
     }
 
-    public void setFollowings(List<Following> followings) {
+    public void setFollowings(List<DummyUser> followings) {
         this.followings = followings;
     }
 }

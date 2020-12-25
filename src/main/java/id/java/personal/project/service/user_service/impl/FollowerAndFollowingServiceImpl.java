@@ -1,13 +1,9 @@
 package id.java.personal.project.service.user_service.impl;
 
 import id.java.personal.project.dao.FollowerAndFollowingRepository;
-import id.java.personal.project.dao.FollowerRepository;
-import id.java.personal.project.dao.FollowingRepository;
 import id.java.personal.project.dao.UserRepository;
 import id.java.personal.project.domain.DummyUser;
-import id.java.personal.project.domain.Follower;
 import id.java.personal.project.domain.FollowerAndFollowing;
-import id.java.personal.project.domain.Following;
 import id.java.personal.project.dto.response.error.StatusResponse;
 import id.java.personal.project.service.user_service.FollowerAndFollowingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,26 +19,17 @@ public class FollowerAndFollowingServiceImpl implements FollowerAndFollowingServ
 
     private final UserRepository userRepository;
     private final FollowerAndFollowingRepository followerAndFollowingRepository;
-    private final FollowerRepository followerRepository;
-    private final FollowingRepository followingRepository;
 
     @Autowired
     public FollowerAndFollowingServiceImpl(UserRepository userRepository,
-                                           FollowerAndFollowingRepository followerAndFollowingRepository,
-                                           FollowerRepository followerRepository,
-                                           FollowingRepository followingRepository) {
+                                           FollowerAndFollowingRepository followerAndFollowingRepository) {
         this.userRepository = userRepository;
         this.followerAndFollowingRepository = followerAndFollowingRepository;
-        this.followerRepository = followerRepository;
-        this.followingRepository = followingRepository;
     }
 
     @Override
     public StatusResponse followingUserByUsername(String username, String currentUserId) {
-
         StatusResponse statusResponse = new StatusResponse();
-        List<Follower> followers =  new ArrayList<>();
-        List<Following> followings = new ArrayList<>();
 
         DummyUser followedUser = userRepository.findDummyUserByUsername(username);
         if(followedUser == null)
@@ -52,39 +39,47 @@ public class FollowerAndFollowingServiceImpl implements FollowerAndFollowingServ
         if(currentUserFollowing == null)
             return statusResponse.statusNotFound(USER_WITH_ID.getMessage() + currentUserId + IS_NOT_EXISTS.getMessage(), null);
 
+        if(followedUser.getId().equals(currentUserFollowing.getId()))
+            return statusResponse.statusBadRequest(YOU_CAN_NOT_FOLLOW_YOURSELF.getMessage(), null);
+
         FollowerAndFollowing currentUserWhoFollowedBy = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(followedUser);
-        List<Follower> personThatFollowedTheCurrentUserList = insertPersonThatFollowedTheCurrentUser(currentUserFollowing, followers);
-        currentUserWhoFollowedBy.setFollowers(personThatFollowedTheCurrentUserList);
+        FollowerAndFollowing userWhoFollowingTheUser = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(currentUserFollowing);
+
+        List<DummyUser> currentFollowedList = currentUserWhoFollowedBy.getFollowings();
+        List<DummyUser> personFollowingToUserList = userWhoFollowingTheUser.getFollowings();
+
+        boolean checkIfUserAlreadyInFollowerAndFollowingList = checkIfUserAlreadyInFollowerAndFollowingList(followedUser, currentUserFollowing, currentFollowedList, personFollowingToUserList, statusResponse);
+        if(checkIfUserAlreadyInFollowerAndFollowingList)
+            return statusResponse.statusNotModified(ALREADY_EXISTS_IN_FOLLOWER_OR_FOLLOWING_LIST.getMessage(), null);
+
+        if(currentFollowedList == null || currentFollowedList.size() == 0)
+            currentFollowedList = new ArrayList<>();
+
+        currentFollowedList.add(currentUserFollowing);
+        currentUserWhoFollowedBy.setFollowers(currentFollowedList);
         followerAndFollowingRepository.save(currentUserWhoFollowedBy);
 
+        if(personFollowingToUserList == null || personFollowingToUserList.size() == 0)
+            personFollowingToUserList = new ArrayList<>();
 
-        FollowerAndFollowing userWhoFollowingTheUser = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(currentUserFollowing);
-        List<Following> personFollowingToUserList = insertPersonFollowingToUser(followedUser, followings);
+        personFollowingToUserList.add(followedUser);
         userWhoFollowingTheUser.setFollowings(personFollowingToUserList);
         followerAndFollowingRepository.save(userWhoFollowingTheUser);
 
         return statusResponse.statusOk(SUCCESSFULLY_FOLLOWED_USER_WITH_USERNAME.getMessage() + username);
     }
 
-    private List<Following> insertPersonFollowingToUser(DummyUser followedUser, List<Following> followings) {
+    private boolean checkIfUserAlreadyInFollowerAndFollowingList(DummyUser followedUser, DummyUser currentUserFollowing, List<DummyUser> currentFollowedList, List<DummyUser> personFollowingToUserList, StatusResponse statusResponse) {
+        for(DummyUser currentFollowedUser: currentFollowedList){
+            if(currentFollowedUser.getId().equals(currentUserFollowing.getId()))
+                return true;
+        }
 
-        Following following = new Following();
-        following.setUserId(followedUser);
-        followingRepository.save(following);
-
-        followings.add(following);
-        return followings;
+        for(DummyUser currentFollowingUser : personFollowingToUserList){
+            if(currentFollowingUser.getId().equals(followedUser))
+                return true;
+        }
+        return false;
     }
-
-    private List<Follower> insertPersonThatFollowedTheCurrentUser(DummyUser currentUserFollowing, List<Follower> followers) {
-        Follower personFollowedCurrentUser = new Follower();
-        personFollowedCurrentUser.setUserId(currentUserFollowing);
-        followerRepository.save(personFollowedCurrentUser);
-
-        followers.add(personFollowedCurrentUser);
-        return followers;
-
-    }
-
 
 }

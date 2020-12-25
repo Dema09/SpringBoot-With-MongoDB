@@ -13,7 +13,9 @@ public enum AppEnum {
     USER_WITH_ID("This user with id: "),
     HAS_BEEN_EXISTS(" has been exists!"),
     IS_NOT_EXISTS(" is not exists!"),
-    SUCCESSFULLY_FOLLOWED_USER_WITH_USERNAME("Successfully followed user with username: ");
+    SUCCESSFULLY_FOLLOWED_USER_WITH_USERNAME("Successfully followed user with username: "),
+    YOU_CAN_NOT_FOLLOW_YOURSELF("You can't follow yourself!"),
+    ALREADY_EXISTS_IN_FOLLOWER_OR_FOLLOWING_LIST("Already exists in followers and followings list!");
 
     private String message;
 
