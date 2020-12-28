@@ -23,4 +23,10 @@ public class FollowerAndFollowingController {
         return new ResponseEntity(followingUserResponse, followingUserResponse.getResponse());
     }
 
+    @PostMapping("/unfollowingUser/{username}")
+    private ResponseEntity unfollowingUserByUsername(@PathVariable String username, @RequestHeader(value = "userId") String userId){
+        StatusResponse unfollowingUserResponse = followerAndFollowingService.unfollowingUserByUsername(username, userId);
+        return new ResponseEntity(unfollowingUserResponse, unfollowingUserResponse.getResponse());
+    }
+
 }
