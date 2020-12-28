@@ -86,6 +86,9 @@ public class FollowerAndFollowingServiceImpl implements FollowerAndFollowingServ
         if(personWhoUnfollowing == null)
             return statusResponse.statusNotFound(USER_WITH_ID.getMessage() + currentUserId + IS_NOT_EXISTS.getMessage(), null);
 
+        if(personThatUnfollowed.getId().equals(personWhoUnfollowing.getId()))
+            return statusResponse.statusBadRequest(CANNOT_UNFOLLOW_YOURSELF.getMessage(), null);
+
         FollowerAndFollowing personUnfollowedDetail = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(personThatUnfollowed);
         List<DummyUser> followerList = personUnfollowedDetail.getFollowers();
 
