@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static id.java.personal.project.constant.AppEnum.*;
@@ -45,28 +46,73 @@ public class FollowerAndFollowingServiceImpl implements FollowerAndFollowingServ
         FollowerAndFollowing currentUserWhoFollowedBy = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(followedUser);
         FollowerAndFollowing userWhoFollowingTheUser = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(currentUserFollowing);
 
-        List<DummyUser> currentFollowedList = currentUserWhoFollowedBy.getFollowings();
+        List<DummyUser> currentFollowedList = currentUserWhoFollowedBy.getFollowers();
         List<DummyUser> personFollowingToUserList = userWhoFollowingTheUser.getFollowings();
+
+        if(currentFollowedList == null || currentFollowedList.size() == 0)
+            currentFollowedList = new ArrayList<>();
+
+        if(personFollowingToUserList == null || personFollowingToUserList.size() == 0)
+            personFollowingToUserList = new ArrayList<>();
 
         boolean checkIfUserAlreadyInFollowerAndFollowingList = checkIfUserAlreadyInFollowerAndFollowingList(followedUser, currentUserFollowing, currentFollowedList, personFollowingToUserList, statusResponse);
         if(checkIfUserAlreadyInFollowerAndFollowingList)
             return statusResponse.statusNotModified(ALREADY_EXISTS_IN_FOLLOWER_OR_FOLLOWING_LIST.getMessage(), null);
 
-        if(currentFollowedList == null || currentFollowedList.size() == 0)
-            currentFollowedList = new ArrayList<>();
+        insertIntoCurrentFollowedListAndCurrentFollowingList(currentUserFollowing, followedUser,currentFollowedList, personFollowingToUserList, currentUserWhoFollowedBy, userWhoFollowingTheUser);
+        return statusResponse.statusOk(SUCCESSFULLY_FOLLOWED_USER_WITH_USERNAME.getMessage() + username);
+    }
+
+    private void insertIntoCurrentFollowedListAndCurrentFollowingList(DummyUser currentUserFollowing, DummyUser followedUser ,List<DummyUser> currentFollowedList, List<DummyUser> personFollowingToUserList, FollowerAndFollowing currentUserWhoFollowedBy, FollowerAndFollowing userWhoFollowingTheUser) {
 
         currentFollowedList.add(currentUserFollowing);
         currentUserWhoFollowedBy.setFollowers(currentFollowedList);
         followerAndFollowingRepository.save(currentUserWhoFollowedBy);
 
-        if(personFollowingToUserList == null || personFollowingToUserList.size() == 0)
-            personFollowingToUserList = new ArrayList<>();
-
         personFollowingToUserList.add(followedUser);
         userWhoFollowingTheUser.setFollowings(personFollowingToUserList);
         followerAndFollowingRepository.save(userWhoFollowingTheUser);
+    }
 
-        return statusResponse.statusOk(SUCCESSFULLY_FOLLOWED_USER_WITH_USERNAME.getMessage() + username);
+    @Override
+    public StatusResponse unfollowingUserByUsername(String username, String currentUserId) {
+        StatusResponse statusResponse = new StatusResponse();
+
+        DummyUser personThatUnfollowed = userRepository.findDummyUserByUsername(username);
+        if(personThatUnfollowed == null)
+            return statusResponse.statusNotFound(THIS_USER_WITH_USERNAME.getMessage() + username + IS_NOT_EXISTS, null);
+
+        DummyUser personWhoUnfollowing = userRepository.findOne(currentUserId);
+        if(personWhoUnfollowing == null)
+            return statusResponse.statusNotFound(USER_WITH_ID.getMessage() + currentUserId + IS_NOT_EXISTS.getMessage(), null);
+
+        FollowerAndFollowing personUnfollowedDetail = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(personThatUnfollowed);
+        List<DummyUser> followerList = personUnfollowedDetail.getFollowers();
+
+        Iterator<DummyUser> userUnfollowedIterator = followerList.iterator();
+        while(userUnfollowedIterator.hasNext()){
+            DummyUser userWhoUnfollowed = userUnfollowedIterator.next();
+            if(userWhoUnfollowed.getId().equals(personWhoUnfollowing.getId()))
+                userUnfollowedIterator.remove();
+        }
+
+        personUnfollowedDetail.setFollowers(followerList);
+        followerAndFollowingRepository.save(personUnfollowedDetail);
+
+        FollowerAndFollowing personWhoUnfollowingDetail = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(personWhoUnfollowing);
+        List<DummyUser> followingList = personWhoUnfollowingDetail.getFollowings();
+
+        Iterator<DummyUser> userWhoUnfollowingIterator = followingList.iterator();
+        while(userWhoUnfollowingIterator.hasNext()){
+            DummyUser userWhoUnfollowing = userWhoUnfollowingIterator.next();
+            if(userWhoUnfollowing.getId().equals(personThatUnfollowed.getId()))
+                userUnfollowedIterator.remove();
+        }
+
+        personWhoUnfollowingDetail.setFollowings(followingList);
+        followerAndFollowingRepository.save(personWhoUnfollowingDetail);
+
+        return statusResponse.statusOk(SUCCESSFULLY_UNFOLLOWED_USER_WITH_USERNAME.getMessage() + username);
     }
 
     private boolean checkIfUserAlreadyInFollowerAndFollowingList(DummyUser followedUser, DummyUser currentUserFollowing, List<DummyUser> currentFollowedList, List<DummyUser> personFollowingToUserList, StatusResponse statusResponse) {
