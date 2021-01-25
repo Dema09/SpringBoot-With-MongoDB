@@ -78,6 +78,7 @@ public class UserServiceImpl implements UserService {
             return statusResponse.statusConflict(AppEnum.THIS_USER_WITH_USERNAME.getMessage() + registerDTO.getUsername() + AppEnum.HAS_BEEN_EXISTS.getMessage(), null);
 
         DummyUser dummyUser = new DummyUser(registerDTO.getUsername(),
+                registerDTO.getNickname(),
                 passwordEncoder.encode(registerDTO.getPassword()),
                 registerDTO.getAddress(),
                 registerDTO.getEmail(),
@@ -106,6 +107,7 @@ public class UserServiceImpl implements UserService {
         currentUser.setAddress(profileDTO.getAddress());
         currentUser.setPassword(passwordEncoder.encode(profileDTO.getPassword()));
         currentUser.setProfilePicture(profileDTO.getProfilePicture().getOriginalFilename());
+        currentUser.setNickname(profileDTO.getNickname());
         convertProfilePicture(profileDTO.getProfilePicture().getBytes(), profileDTO.getProfilePicture());
 
         userRepository.save(currentUser);
@@ -129,8 +131,8 @@ public class UserServiceImpl implements UserService {
         profileResponse.setAddress(currentUser.getAddress());
         profileResponse.setUserProfilePicture(currentUser.getProfilePicture() == null ? "" : getImage(currentUser.getProfilePicture()));
         profileResponse.setUserRole(currentUser.getDummyUserRole().getUserRole());
-        profileResponse.setNumberOfFollowers(followerAndFollowing.getFollowers().size());
-        profileResponse.setNumberOfFollowings(followerAndFollowing.getFollowings().size());
+        profileResponse.setNumberOfFollowers(followerAndFollowing.getFollowers() == null ? 0 : followerAndFollowing.getFollowers().size());
+        profileResponse.setNumberOfFollowings(followerAndFollowing.getFollowings() == null ? 0 : followerAndFollowing.getFollowings().size());
 
         return statusResponse.statusOk(profileResponse);
     }

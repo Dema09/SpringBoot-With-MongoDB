@@ -17,7 +17,7 @@ public enum AppEnum {
     YOU_CAN_NOT_FOLLOW_YOURSELF("You can't follow yourself!"),
     ALREADY_EXISTS_IN_FOLLOWER_OR_FOLLOWING_LIST("Already exists in followers and followings list!"),
     SUCCESSFULLY_UNFOLLOWED_USER_WITH_USERNAME("Successfully unfollowed user with username: "),
-    CANNOT_UNFOLLOW_YOURSELF("You can not unfollow yourself!");
+    CANNOT_UNFOLLOW_YOURSELF("You can't unfollow yourself!");
 
     private String message;
 

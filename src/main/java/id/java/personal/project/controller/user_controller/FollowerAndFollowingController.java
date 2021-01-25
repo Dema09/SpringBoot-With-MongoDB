@@ -29,4 +29,10 @@ public class FollowerAndFollowingController {
         return new ResponseEntity(unfollowingUserResponse, unfollowingUserResponse.getResponse());
     }
 
+    @GetMapping("/{username}/followers")
+    private ResponseEntity getAllFollowers(@PathVariable String username){
+        StatusResponse getFollowerResponse = followerAndFollowingService.getAllFollowersByUsername(username);
+        return new ResponseEntity(getFollowerResponse, getFollowerResponse.getResponse());
+    }
+
 }
