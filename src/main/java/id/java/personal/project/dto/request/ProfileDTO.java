@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class ProfileDTO {
     private String username;
+    private String nickname;
     private String address;
     private String password;
     private MultipartFile profilePicture;
@@ -14,6 +15,14 @@ public class ProfileDTO {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public String getAddress() {

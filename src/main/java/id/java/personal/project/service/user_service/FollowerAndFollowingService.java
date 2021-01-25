@@ -9,4 +9,8 @@ public interface FollowerAndFollowingService {
     StatusResponse followingUserByUsername(String username, String currentUserId);
 
     StatusResponse unfollowingUserByUsername(String username, String currentUserId);
+
+    StatusResponse getAllFollowersByUsername(String username);
+
+    StatusResponse getAllFollowingsByUsername(String username);
 }

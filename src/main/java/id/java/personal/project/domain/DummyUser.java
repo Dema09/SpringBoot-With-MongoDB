@@ -17,6 +17,7 @@ public class DummyUser implements Serializable {
     private String id;
 
     private String username;
+    private String nickname;
     private String password;
     private String address;
     private String email;
@@ -36,8 +37,9 @@ public class DummyUser implements Serializable {
     private DummyUserRole dummyUserRole;
 
 
-    public DummyUser(String username, String password, String address, String email, String phoneNumber, Date dateOfBirth, DummyUserRole dummyUserRole) {
+    public DummyUser(String username, String nickname, String password, String address, String email, String phoneNumber, Date dateOfBirth, DummyUserRole dummyUserRole) {
         this.username = username;
+        this.nickname = nickname;
         this.password = password;
         this.address = address;
         this.email = email;
@@ -68,6 +70,14 @@ public class DummyUser implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public String getAddress() {

@@ -90,6 +90,7 @@ public class AdminServiceImpl implements AdminService {
 
         DummyUser newAdminUser = new DummyUser(
                 registerDTO.getUsername(),
+                registerDTO.getNickname(),
                 registerDTO.getPassword(),
                 registerDTO.getAddress(),
                 registerDTO.getEmail(),

@@ -4,6 +4,9 @@ import id.java.personal.project.dao.FollowerAndFollowingRepository;
 import id.java.personal.project.dao.UserRepository;
 import id.java.personal.project.domain.DummyUser;
 import id.java.personal.project.domain.FollowerAndFollowing;
+import id.java.personal.project.dto.response.FollowerOrFollowingResponse;
+import id.java.personal.project.dto.response.FollowerResponse;
+import id.java.personal.project.dto.response.FollowingResponse;
 import id.java.personal.project.dto.response.error.StatusResponse;
 import id.java.personal.project.service.user_service.FollowerAndFollowingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,6 +89,9 @@ public class FollowerAndFollowingServiceImpl implements FollowerAndFollowingServ
         if(personWhoUnfollowing == null)
             return statusResponse.statusNotFound(USER_WITH_ID.getMessage() + currentUserId + IS_NOT_EXISTS.getMessage(), null);
 
+        if(personThatUnfollowed.getId().equals(personWhoUnfollowing.getId()))
+            return statusResponse.statusBadRequest(CANNOT_UNFOLLOW_YOURSELF.getMessage(), null);
+
         FollowerAndFollowing personUnfollowedDetail = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(personThatUnfollowed);
         List<DummyUser> followerList = personUnfollowedDetail.getFollowers();
 
@@ -113,6 +119,56 @@ public class FollowerAndFollowingServiceImpl implements FollowerAndFollowingServ
         followerAndFollowingRepository.save(personWhoUnfollowingDetail);
 
         return statusResponse.statusOk(SUCCESSFULLY_UNFOLLOWED_USER_WITH_USERNAME.getMessage() + username);
+    }
+
+    @Override
+    public StatusResponse getAllFollowersByUsername(String username) {
+        StatusResponse statusResponse = new StatusResponse();
+        FollowerResponse followerResponse = new FollowerResponse();
+        List<FollowerOrFollowingResponse> followersList = new ArrayList<>();
+
+        DummyUser currentUser = userRepository.findDummyUserByUsername(username);
+        if(currentUser == null)
+            return statusResponse.statusNotFound(THIS_USER_WITH_USERNAME.getMessage() + username + IS_NOT_EXISTS.getMessage(), null);
+
+        FollowerAndFollowing currentUserFollowerAndFollowing = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(currentUser);
+        if(currentUserFollowerAndFollowing.getFollowers().size() == 0)
+            return statusResponse.statusOk(new FollowerResponse());
+
+        for(DummyUser user : currentUserFollowerAndFollowing.getFollowers()){
+            FollowerOrFollowingResponse followerOrFollowingResponse = new FollowerOrFollowingResponse();
+            followerOrFollowingResponse.setUsername(user.getUsername());
+            followerOrFollowingResponse.setNickname(user.getNickname());
+
+            followersList.add(followerOrFollowingResponse);
+        }
+        followerResponse.setFollowers(followersList);
+        return statusResponse.statusOk(followerResponse);
+    }
+
+    @Override
+    public StatusResponse getAllFollowingsByUsername(String username) {
+        StatusResponse statusResponse = new StatusResponse();
+        FollowingResponse followingResponse = new FollowingResponse();
+        List<FollowerOrFollowingResponse> followerOrFollowingResponses = new ArrayList<>();
+
+        DummyUser currentUser = userRepository.findDummyUserByUsername(username);
+        if(currentUser == null)
+            return statusResponse.statusNotFound(THIS_USER_WITH_USERNAME.getMessage() + username + IS_NOT_EXISTS.getMessage(), null);
+
+        FollowerAndFollowing currentUserFollowerAndFollowing = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(currentUser);
+        if(currentUserFollowerAndFollowing.getFollowings().size() == 0)
+            return statusResponse.statusOk(new FollowingResponse());
+
+        for(DummyUser user : currentUserFollowerAndFollowing.getFollowings()){
+            FollowerOrFollowingResponse followerOrFollowingResponse = new FollowerOrFollowingResponse();
+            followerOrFollowingResponse.setNickname(user.getNickname());
+            followerOrFollowingResponse.setUsername(user.getUsername());
+
+            followerOrFollowingResponses.add(followerOrFollowingResponse);
+        }
+        followingResponse.setFollowings(followerOrFollowingResponses);
+        return statusResponse.statusOk(followingResponse);
     }
 
     private boolean checkIfUserAlreadyInFollowerAndFollowingList(DummyUser followedUser, DummyUser currentUserFollowing, List<DummyUser> currentFollowedList, List<DummyUser> personFollowingToUserList, StatusResponse statusResponse) {
