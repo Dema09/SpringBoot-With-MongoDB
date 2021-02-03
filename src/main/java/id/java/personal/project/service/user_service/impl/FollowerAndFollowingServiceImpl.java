@@ -47,10 +47,10 @@ public class FollowerAndFollowingServiceImpl implements FollowerAndFollowingServ
             return statusResponse.statusBadRequest(YOU_CAN_NOT_FOLLOW_YOURSELF.getMessage(), null);
 
         FollowerAndFollowing currentUserWhoFollowedBy = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(followedUser);
-        FollowerAndFollowing userWhoFollowingTheUser = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(currentUserFollowing);
+        FollowerAndFollowing userWhoFollowing = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(currentUserFollowing);
 
         List<DummyUser> currentFollowedList = currentUserWhoFollowedBy.getFollowers();
-        List<DummyUser> personFollowingToUserList = userWhoFollowingTheUser.getFollowings();
+        List<DummyUser> personFollowingToUserList = userWhoFollowing.getFollowings();
 
         if(currentFollowedList == null || currentFollowedList.size() == 0)
             currentFollowedList = new ArrayList<>();
@@ -62,7 +62,7 @@ public class FollowerAndFollowingServiceImpl implements FollowerAndFollowingServ
         if(checkIfUserAlreadyInFollowerAndFollowingList)
             return statusResponse.statusNotModified(ALREADY_EXISTS_IN_FOLLOWER_OR_FOLLOWING_LIST.getMessage(), null);
 
-        insertIntoCurrentFollowedListAndCurrentFollowingList(currentUserFollowing, followedUser,currentFollowedList, personFollowingToUserList, currentUserWhoFollowedBy, userWhoFollowingTheUser);
+        insertIntoCurrentFollowedListAndCurrentFollowingList(currentUserFollowing, followedUser,currentFollowedList, personFollowingToUserList, currentUserWhoFollowedBy, userWhoFollowing);
         return statusResponse.statusOk(SUCCESSFULLY_FOLLOWED_USER_WITH_USERNAME.getMessage() + username);
     }
 
