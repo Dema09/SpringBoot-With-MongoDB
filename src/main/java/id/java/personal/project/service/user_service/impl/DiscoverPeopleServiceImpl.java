@@ -38,8 +38,8 @@ public class DiscoverPeopleServiceImpl implements DiscoverPeopleService {
     public StatusResponse discoverPeopleBasedOnUserId(String userId) {
         StatusResponse statusResponse = new StatusResponse();
         DiscoverPeopleHeadResponse discoverPeopleHeadResponse = new DiscoverPeopleHeadResponse();
-        DiscoverPeopleResponse discoverPeopleResponse = new DiscoverPeopleResponse();
         List<DiscoverPeopleResponse> discoverPeopleResponseList = new ArrayList<>();
+
 
         DummyUser currentUser = userRepository.findOne(userId);
         if (currentUser == null)
@@ -50,8 +50,7 @@ public class DiscoverPeopleServiceImpl implements DiscoverPeopleService {
             return statusResponse.statusOk(new DiscoverPeopleHeadResponse());
 
         for (DummyUser userWhoFollowedByCurrentUser : currentUserFollowerAndFollowing.getFollowings()) {
-            insertCurrentUserDiscoverPeople(userWhoFollowedByCurrentUser, discoverPeopleResponse, currentUser, currentUserFollowerAndFollowing);
-            discoverPeopleResponseList.add(discoverPeopleResponse);
+            discoverPeopleResponseList = insertCurrentUserDiscoverPeople(userWhoFollowedByCurrentUser, currentUser, currentUserFollowerAndFollowing);
         }
 
         discoverPeopleHeadResponse.setDiscoverPeopleResponses(discoverPeopleResponseList);
@@ -59,12 +58,27 @@ public class DiscoverPeopleServiceImpl implements DiscoverPeopleService {
     }
 
     private DiscoverPeopleResponse insertToDiscoverPeopleResponse(DummyUser userWhoFollowedBuCurrentUser, DiscoverPeopleResponse discoverPeopleResponse) {
+
         discoverPeopleResponse.setUserId(userWhoFollowedBuCurrentUser.getId());
         discoverPeopleResponse.setUsername(userWhoFollowedBuCurrentUser.getUsername());
         discoverPeopleResponse.setUserRole(userWhoFollowedBuCurrentUser.getDummyUserRole().getUserRole());
         discoverPeopleResponse.setUserAge(calculateAge(userWhoFollowedBuCurrentUser.getDateOfBirth()));
-
+        discoverPeopleResponse.setMutualUsers(insertMutualUsers(userWhoFollowedBuCurrentUser));
+        discoverPeopleResponse.setNumberOfMutualUser(insertMutualUsers(userWhoFollowedBuCurrentUser).size());
         return discoverPeopleResponse;
+    }
+
+    private List<DummyUser> insertMutualUsers(DummyUser userWhoFollowedByCurrentUser) {
+        FollowerAndFollowing userWhoFollowedByCurrentUserFollowerAndFollowing = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(userWhoFollowedByCurrentUser);
+        Iterator<DummyUser> followerIterator = userWhoFollowedByCurrentUserFollowerAndFollowing.getFollowers().iterator();
+        List<DummyUser> followerAndFollowingList = new ArrayList<>();
+
+        while(followerIterator.hasNext()) {
+            DummyUser dummyUser = followerIterator.next();
+            followerAndFollowingList.add(dummyUser);
+            }
+
+        return followerAndFollowingList;
     }
 
     private Integer calculateAge(Date dateOfBirth) {
@@ -74,32 +88,44 @@ public class DiscoverPeopleServiceImpl implements DiscoverPeopleService {
         return Period.between(dateOfBirthInLocalDate, currentDate).getYears();
     }
 
-    private void insertCurrentUserDiscoverPeople(DummyUser userWhoFollowedByCurrentUser, DiscoverPeopleResponse discoverPeopleResponse, DummyUser currentUser, FollowerAndFollowing currentUserFollowerAndFollowing) {
+    private List<DiscoverPeopleResponse> insertCurrentUserDiscoverPeople(DummyUser userWhoFollowedByCurrentUser,
+                                                 DummyUser currentUser,
+                                                 FollowerAndFollowing currentUserFollowerAndFollowing) {
+
+        List<DiscoverPeopleResponse> discoverPeopleResponses = new ArrayList<>();
+
         FollowerAndFollowing followerAndFollowingOfUserWhoFollowedByCurrentUser = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(userWhoFollowedByCurrentUser);
 
         if (followerAndFollowingOfUserWhoFollowedByCurrentUser.getFollowings() == null || followerAndFollowingOfUserWhoFollowedByCurrentUser.getFollowings().size() == 0)
-            return;
+            return new ArrayList<>();
 
         for(DummyUser followingUser: followerAndFollowingOfUserWhoFollowedByCurrentUser.getFollowings()){
             if(followingUser.getId().equals(currentUser.getId())){
                 continue;
             }
             else{
+                DiscoverPeopleResponse discoverPeopleResponse = new DiscoverPeopleResponse();
                 boolean checkFollowEachOther = checkUserFollowEachOther(followingUser, userWhoFollowedByCurrentUser);
-                if(checkFollowEachOther && !currentUserFollowerAndFollowing.getFollowers().contains(followingUser))
-                    insertToDiscoverPeopleResponse(followingUser, discoverPeopleResponse);
+
+//                Integer followingUserInCurrentUserFollowingListHashCode1 = currentUserFollowerAndFollowing.getFollowings().hashCode();
+//                Integer followingUserInCurrentUserFollowingListHashCode2 = followingUser.hashCode();
+
+                for(int counter = 0; counter < currentUserFollowerAndFollowing.getFollowings().size(); counter++){
+                    if(checkFollowEachOther && currentUserFollowerAndFollowing.getFollowings().get(counter).equals(followingUser))
+                        discoverPeopleResponses.add(insertToDiscoverPeopleResponse(followingUser, discoverPeopleResponse));
+
+                }
             }
         }
+        return discoverPeopleResponses;
     }
 
     private boolean checkUserFollowEachOther(DummyUser firstUser, DummyUser secondUser){
         FollowerAndFollowing followerAndFollowing = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(firstUser);
         List<DummyUser> followingList = followerAndFollowing.getFollowings();
 
-        Iterator<DummyUser> followingIterator = followingList.iterator();
-        while(followingIterator.hasNext()){
-            DummyUser currentUser = followingIterator.next();
-            if(currentUser.getId().equals(secondUser.getId()))
+        for(DummyUser dummyUser : followingList){
+            if(dummyUser.getId().equals(secondUser.getId()))
                 return true;
         }
 

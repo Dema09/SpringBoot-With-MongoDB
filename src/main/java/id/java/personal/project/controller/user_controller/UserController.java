@@ -40,4 +40,16 @@ public class UserController {
         StatusResponse profileResponse = userService.getUserDataProfileById(userId);
         return new ResponseEntity(profileResponse, profileResponse.getResponse());
     }
+
+    @PostMapping("/setProtectedAccount")
+    private ResponseEntity setProtectedAccount(@RequestHeader (value = "userId") String userId){
+        StatusResponse setProtectedAccountResponse = userService.setProtectedAccountByUserId(userId);
+        return new ResponseEntity(setProtectedAccountResponse, setProtectedAccountResponse.getResponse());
+    }
+
+    @PostMapping("/unsetProtectedAccount")
+    private ResponseEntity unsetProtectedAccount(@RequestHeader (value = "userId") String userId){
+        StatusResponse unsetProtectedAccountResponse = userService.unsetProtectedAccount(userId);
+        return new ResponseEntity(unsetProtectedAccountResponse, unsetProtectedAccountResponse.getResponse());
+    }
 }

@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
+import java.util.Objects;
 
 @Document(collection = "follower_and_following")
 public class FollowerAndFollowing {
@@ -51,5 +52,18 @@ public class FollowerAndFollowing {
 
     public void setFollowings(List<DummyUser> followings) {
         this.followings = followings;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FollowerAndFollowing that = (FollowerAndFollowing) o;
+        return followId.equals(that.followId) && dummyUser.equals(that.dummyUser) && followers.equals(that.followers) && followings.equals(that.followings);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(followId, dummyUser, followers, followings);
     }
 }

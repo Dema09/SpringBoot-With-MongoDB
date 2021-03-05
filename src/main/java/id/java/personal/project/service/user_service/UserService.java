@@ -19,4 +19,7 @@ public interface UserService {
 
     StatusResponse loginUser(LoginDTO loginDTO);
 
+    StatusResponse setProtectedAccountByUserId(String userId);
+
+    StatusResponse unsetProtectedAccount(String userId);
 }
