@@ -17,7 +17,11 @@ public enum AppEnum {
     YOU_CAN_NOT_FOLLOW_YOURSELF("You can't follow yourself!"),
     ALREADY_EXISTS_IN_FOLLOWER_OR_FOLLOWING_LIST("Already exists in followers and followings list!"),
     SUCCESSFULLY_UNFOLLOWED_USER_WITH_USERNAME("Successfully unfollowed user with username: "),
-    CANNOT_UNFOLLOW_YOURSELF("You can't unfollow yourself!");
+    CANNOT_UNFOLLOW_YOURSELF("You can't unfollow yourself!"),
+    SUCCESSFULLY_SET_YOUR_ACCOUNT_TO_PROTECTED("Successfully set your account to protected!"),
+    YOUR_ACCOUNT_ALREADY_PROTECTED("Your account is already protected!"),
+    YOUR_ACCOUNT_ALREADY_UNPROTECTED("Your account is already un-protected!"),
+    SUCCESSFULLY_SET_YOUR_ACCOUNT_TO_UNPROTECTED("Successfully set your account to un-protected!");
 
     private String message;
 

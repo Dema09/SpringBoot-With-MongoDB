@@ -10,6 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 @Document(collection = "user_data")
 public class DummyUser implements Serializable {
@@ -23,6 +24,7 @@ public class DummyUser implements Serializable {
     private String email;
     private String phoneNumber;
     private String profilePicture;
+    private boolean isProtectedAccount;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date dateOfBirth;
@@ -35,6 +37,8 @@ public class DummyUser implements Serializable {
 
     @DBRef
     private DummyUserRole dummyUserRole;
+
+    public DummyUser(){}
 
 
     public DummyUser(String username, String nickname, String password, String address, String email, String phoneNumber, Date dateOfBirth, DummyUserRole dummyUserRole) {
@@ -128,6 +132,14 @@ public class DummyUser implements Serializable {
         this.dummyUserRole = dummyUserRole;
     }
 
+    public boolean isProtectedAccount() {
+        return isProtectedAccount;
+    }
+
+    public void setProtectedAccount(boolean protectedAccount) {
+        isProtectedAccount = protectedAccount;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -142,6 +154,19 @@ public class DummyUser implements Serializable {
 
     public void setLastModified(Date lastModified) {
         this.lastModified = lastModified;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DummyUser dummyUser = (DummyUser) o;
+        return id.equals(dummyUser.id) && username.equals(dummyUser.username) && Objects.equals(nickname, dummyUser.nickname) && password.equals(dummyUser.password) && address.equals(dummyUser.address) && email.equals(dummyUser.email) && Objects.equals(phoneNumber, dummyUser.phoneNumber) && Objects.equals(profilePicture, dummyUser.profilePicture) && dateOfBirth.equals(dummyUser.dateOfBirth) && createdAt.equals(dummyUser.createdAt) && lastModified.equals(dummyUser.lastModified) && dummyUserRole.equals(dummyUser.dummyUserRole);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username, nickname, password, address, email, phoneNumber, profilePicture, dateOfBirth, createdAt, lastModified, dummyUserRole);
     }
 }
 

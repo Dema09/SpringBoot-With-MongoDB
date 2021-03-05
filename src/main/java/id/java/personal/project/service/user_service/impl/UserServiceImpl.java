@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
+import static id.java.personal.project.constant.AppEnum.*;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -160,6 +162,40 @@ public class UserServiceImpl implements UserService {
 
         return statusResponse.statusOk(loginResponse);
 
+    }
+
+    @Override
+    public StatusResponse setProtectedAccountByUserId(String userId) {
+        StatusResponse statusResponse = new StatusResponse();
+
+        DummyUser currentUser = userRepository.findOne(userId);
+        if(currentUser == null)
+            return statusResponse.statusNotFound(USER_WITH_ID.getMessage() + userId + IS_NOT_EXISTS.getMessage(), null);
+
+        if(currentUser.isProtectedAccount() == true)
+            return statusResponse.statusNotModified(YOUR_ACCOUNT_ALREADY_PROTECTED.getMessage(), null);
+
+        currentUser.setProtectedAccount(true);
+        userRepository.save(currentUser);
+
+        return statusResponse.statusOk(SUCCESSFULLY_SET_YOUR_ACCOUNT_TO_PROTECTED.getMessage());
+    }
+
+    @Override
+    public StatusResponse unsetProtectedAccount(String userId) {
+        StatusResponse statusResponse =  new StatusResponse();
+
+        DummyUser currentUser = userRepository.findOne(userId);
+        if(currentUser == null)
+            return statusResponse.statusNotFound(USER_WITH_ID.getMessage() + userId + IS_NOT_EXISTS.getMessage(), null);
+
+        if(currentUser.isProtectedAccount() == false)
+            return statusResponse.statusNotModified(YOUR_ACCOUNT_ALREADY_UNPROTECTED.getMessage(), null);
+
+        currentUser.setProtectedAccount(false);
+        userRepository.save(currentUser);
+
+        return statusResponse.statusOk(SUCCESSFULLY_SET_YOUR_ACCOUNT_TO_UNPROTECTED.getMessage());
     }
 
     private String getImage(String profilePicture) throws IOException {
