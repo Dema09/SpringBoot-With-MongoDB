@@ -1,5 +1,6 @@
 package id.java.personal.project.controller.user_controller;
 
+import id.java.personal.project.dto.request.CloseFriendRequestDTO;
 import id.java.personal.project.dto.request.ProfileDTO;
 import id.java.personal.project.dto.request.RegisterDTO;
 import id.java.personal.project.dto.response.error.StatusResponse;
@@ -51,5 +52,11 @@ public class UserController {
     private ResponseEntity unsetProtectedAccount(@RequestHeader (value = "userId") String userId){
         StatusResponse unsetProtectedAccountResponse = userService.unsetProtectedAccount(userId);
         return new ResponseEntity(unsetProtectedAccountResponse, unsetProtectedAccountResponse.getResponse());
+    }
+
+    @PostMapping("/insertCloseFriend")
+    private ResponseEntity insertCloseFriend(@RequestHeader (value = "userId") String userId, @RequestBody CloseFriendRequestDTO closeFriendRequestDTO){
+        StatusResponse insertCloseFriendResponse = userService.insertCloseFriend(userId, closeFriendRequestDTO);
+        return new ResponseEntity(insertCloseFriendResponse, insertCloseFriendResponse.getResponse());
     }
 }

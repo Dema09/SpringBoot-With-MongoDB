@@ -14,4 +14,5 @@ public interface AdminService {
     StatusResponse getAllUser();
 
     StatusResponse registerForAdmin(RegisterDTO registerDTO) throws ParseException;
+
 }

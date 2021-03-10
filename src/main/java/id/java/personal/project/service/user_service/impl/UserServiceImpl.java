@@ -4,10 +4,13 @@ import id.java.personal.project.constant.AppEnum;
 import id.java.personal.project.constant.RoleEnum;
 import id.java.personal.project.dao.FollowerAndFollowingRepository;
 import id.java.personal.project.dao.RoleRepository;
+import id.java.personal.project.dao.UserCloseFriendRepository;
 import id.java.personal.project.dao.UserRepository;
 import id.java.personal.project.domain.DummyUser;
 import id.java.personal.project.domain.DummyUserRole;
 import id.java.personal.project.domain.FollowerAndFollowing;
+import id.java.personal.project.domain.UserCloseFriend;
+import id.java.personal.project.dto.request.CloseFriendRequestDTO;
 import id.java.personal.project.dto.request.LoginDTO;
 import id.java.personal.project.dto.request.ProfileDTO;
 import id.java.personal.project.dto.request.RegisterDTO;
@@ -48,6 +51,7 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final RoleRepository roleRepository;
     private final FollowerAndFollowingRepository followerAndFollowingRepository;
+    private final UserCloseFriendRepository userCloseFriendRepository;
     private final JwtUtils jwtUtils;
 
     SimpleDateFormat sdf = new SimpleDateFormat(AppEnum.DATE_FORMAT.getMessage());
@@ -59,6 +63,7 @@ public class UserServiceImpl implements UserService {
                            AuthenticationManager authenticationManager,
                            RoleRepository roleRepository,
                            FollowerAndFollowingRepository followerAndFollowingRepository,
+                           UserCloseFriendRepository userCloseFriendRepository,
                            JwtUtils jwtUtils
                            ) {
         this.userRepository = userRepository;
@@ -67,6 +72,7 @@ public class UserServiceImpl implements UserService {
         this.authenticationManager = authenticationManager;
         this.roleRepository = roleRepository;
         this.followerAndFollowingRepository = followerAndFollowingRepository;
+        this.userCloseFriendRepository = userCloseFriendRepository;
         this.jwtUtils = jwtUtils;
     }
 
@@ -196,6 +202,35 @@ public class UserServiceImpl implements UserService {
         userRepository.save(currentUser);
 
         return statusResponse.statusOk(SUCCESSFULLY_SET_YOUR_ACCOUNT_TO_UNPROTECTED.getMessage());
+    }
+
+    @Override
+    public StatusResponse insertCloseFriend(String userId, CloseFriendRequestDTO closeFriendRequestDTO) {
+        StatusResponse statusResponse = new StatusResponse();
+        UserCloseFriend userCloseFriend = new UserCloseFriend();
+
+        DummyUser currentUser = userRepository.findOne(userId);
+        if(currentUser == null)
+            return statusResponse.statusNotFound(USER_DATA_NOT_FOUND.getMessage(), null);
+
+        insertToCloseFriendData(currentUser, userCloseFriend, closeFriendRequestDTO);
+        return statusResponse.statusCreated(SUCCESSFULLY_ADDED_CLOSE_FRIEND.getMessage(), userCloseFriend.getCloseFriendId());
+    }
+
+    private void insertToCloseFriendData(DummyUser currentUser, UserCloseFriend userCloseFriend, CloseFriendRequestDTO closeFriendRequestDTO) {
+        List<DummyUser> dummyUsers = new ArrayList<>();
+
+        for(String userId : closeFriendRequestDTO.getUserIds()){
+            DummyUser currentUserCloseFriend = userRepository.findOne(userId);
+            if(currentUserCloseFriend.getId().equals(currentUser.getId()))
+                continue;
+
+            dummyUsers.add(currentUserCloseFriend);
+        }
+        userCloseFriend.setDummyUser(currentUser);
+        userCloseFriend.setCloseFriendUsers(dummyUsers);
+
+        userCloseFriendRepository.save(userCloseFriend);
     }
 
     private String getImage(String profilePicture) throws IOException {

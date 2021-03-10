@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static id.java.personal.project.constant.AppEnum.USER_DATA_NOT_FOUND;
+
 @Service
 public class AdminServiceImpl implements AdminService {
 
@@ -41,7 +43,7 @@ public class AdminServiceImpl implements AdminService {
         DummyUser currentDummyUser = userRepository.findOne(userId);
         StatusResponse statusResponse = new StatusResponse();
         if (currentDummyUser == null)
-            return statusResponse.statusNotFound(AppEnum.USER_DATA_NOT_FOUND.getMessage(), null);
+            return statusResponse.statusNotFound(USER_DATA_NOT_FOUND.getMessage(), null);
 
         UserResponseWithAge userResponseWithAge = new UserResponseWithAge();
         userResponseWithAge.setUserId(currentDummyUser.getId());
@@ -102,6 +104,7 @@ public class AdminServiceImpl implements AdminService {
         userRepository.save(newAdminUser);
         return statusResponse.statusCreated(AppEnum.SUCCESS_REGISTER_USER.getMessage(), "Id: " + newAdminUser.getId());
     }
+
 
     private Integer calculateUserAge(Date dateOfBirth) {
         LocalDate dateOfBirthInLocalDate = dateOfBirth.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
