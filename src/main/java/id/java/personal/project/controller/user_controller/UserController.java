@@ -3,6 +3,7 @@ package id.java.personal.project.controller.user_controller;
 import id.java.personal.project.dto.request.CloseFriendRequestDTO;
 import id.java.personal.project.dto.request.ProfileDTO;
 import id.java.personal.project.dto.request.RegisterDTO;
+import id.java.personal.project.dto.request.RemoveCloseFriendDTO;
 import id.java.personal.project.dto.response.error.StatusResponse;
 import id.java.personal.project.service.user_service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,5 +59,11 @@ public class UserController {
     private ResponseEntity insertCloseFriend(@RequestHeader (value = "userId") String userId, @RequestBody CloseFriendRequestDTO closeFriendRequestDTO){
         StatusResponse insertCloseFriendResponse = userService.insertCloseFriend(userId, closeFriendRequestDTO);
         return new ResponseEntity(insertCloseFriendResponse, insertCloseFriendResponse.getResponse());
+    }
+
+    @PostMapping("/removeCloseFriend")
+    private ResponseEntity removeCloseFriend(@RequestHeader (value = "userId") String userId, @RequestBody CloseFriendRequestDTO closeFriendRequestDTO){
+        StatusResponse removeCloseFriendResponse = userService.removeCloseFriendByUserId(userId, closeFriendRequestDTO);
+        return new ResponseEntity(removeCloseFriendResponse, removeCloseFriendResponse.getResponse());
     }
 }

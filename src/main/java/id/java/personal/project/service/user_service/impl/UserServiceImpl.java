@@ -10,10 +10,7 @@ import id.java.personal.project.domain.DummyUser;
 import id.java.personal.project.domain.DummyUserRole;
 import id.java.personal.project.domain.FollowerAndFollowing;
 import id.java.personal.project.domain.UserCloseFriend;
-import id.java.personal.project.dto.request.CloseFriendRequestDTO;
-import id.java.personal.project.dto.request.LoginDTO;
-import id.java.personal.project.dto.request.ProfileDTO;
-import id.java.personal.project.dto.request.RegisterDTO;
+import id.java.personal.project.dto.request.*;
 import id.java.personal.project.dto.response.LoginResponse;
 import id.java.personal.project.dto.response.ProfileResponse;
 import id.java.personal.project.dto.response.error.StatusResponse;
@@ -38,6 +35,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Iterator;
 import java.util.List;
 
 import static id.java.personal.project.constant.AppEnum.*;
@@ -215,6 +213,32 @@ public class UserServiceImpl implements UserService {
 
         insertToCloseFriendData(currentUser, userCloseFriend, closeFriendRequestDTO);
         return statusResponse.statusCreated(SUCCESSFULLY_ADDED_CLOSE_FRIEND.getMessage(), userCloseFriend.getCloseFriendId());
+    }
+
+    @Override
+    public StatusResponse removeCloseFriendByUserId(String userId, CloseFriendRequestDTO closeFriendRequestDTO) {
+        StatusResponse statusResponse = new StatusResponse();
+
+        DummyUser currentUser = userRepository.findOne(userId);
+        if(currentUser == null)
+            return statusResponse.statusNotFound(USER_DATA_NOT_FOUND.getMessage(), null);
+
+        UserCloseFriend currentUserCloseFriend = userCloseFriendRepository.findUserCloseFriendByDummyUser(currentUser);
+        List<DummyUser> dummyUsers = currentUserCloseFriend.getCloseFriendUsers();
+
+        Iterator<DummyUser> dummyUserIterator = dummyUsers.iterator();
+
+        for(String currentUserId : closeFriendRequestDTO.getUserIds()){
+            while(dummyUserIterator.hasNext()){
+                DummyUser dummyUserWhichWantToRemove = dummyUserIterator.next();
+                if(dummyUserWhichWantToRemove.getId().equals(currentUserId))
+                    dummyUserIterator.remove();
+            }
+        }
+        currentUserCloseFriend.setCloseFriendUsers(dummyUsers);
+        userCloseFriendRepository.save(currentUserCloseFriend);
+        return statusResponse.statusOk(SUCCESSFULLY_REMOVE_CLOSE_FRIEND.getMessage());
+
     }
 
     private void insertToCloseFriendData(DummyUser currentUser, UserCloseFriend userCloseFriend, CloseFriendRequestDTO closeFriendRequestDTO) {

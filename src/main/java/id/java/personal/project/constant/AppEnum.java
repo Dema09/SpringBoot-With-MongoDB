@@ -22,7 +22,8 @@ public enum AppEnum {
     YOUR_ACCOUNT_ALREADY_PROTECTED("Your account is already protected!"),
     YOUR_ACCOUNT_ALREADY_UNPROTECTED("Your account is already un-protected!"),
     SUCCESSFULLY_SET_YOUR_ACCOUNT_TO_UNPROTECTED("Successfully set your account to un-protected!"),
-    SUCCESSFULLY_ADDED_CLOSE_FRIEND("Successfully added your close friend!");
+    SUCCESSFULLY_ADDED_CLOSE_FRIEND("Successfully added your close friend!"),
+    SUCCESSFULLY_REMOVE_CLOSE_FRIEND("Successfully remove your close friend!");
 
     private String message;
 

@@ -1,9 +1,6 @@
 package id.java.personal.project.service.user_service;
 
-import id.java.personal.project.dto.request.CloseFriendRequestDTO;
-import id.java.personal.project.dto.request.LoginDTO;
-import id.java.personal.project.dto.request.ProfileDTO;
-import id.java.personal.project.dto.request.RegisterDTO;
+import id.java.personal.project.dto.request.*;
 import id.java.personal.project.dto.response.error.StatusResponse;
 import org.springframework.stereotype.Service;
 
@@ -25,4 +22,6 @@ public interface UserService {
     StatusResponse unsetProtectedAccount(String userId);
 
     StatusResponse insertCloseFriend(String userId, CloseFriendRequestDTO closeFriendRequestDTO);
+
+    StatusResponse removeCloseFriendByUserId(String userId, CloseFriendRequestDTO closeFriendRequestDTO);
 }
