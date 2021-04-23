@@ -1,9 +1,6 @@
 package id.java.personal.project.controller.user_controller;
 
-import id.java.personal.project.dto.request.CloseFriendRequestDTO;
-import id.java.personal.project.dto.request.ProfileDTO;
-import id.java.personal.project.dto.request.RegisterDTO;
-import id.java.personal.project.dto.request.RemoveCloseFriendDTO;
+import id.java.personal.project.dto.request.*;
 import id.java.personal.project.dto.response.error.StatusResponse;
 import id.java.personal.project.service.user_service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,5 +62,17 @@ public class UserController {
     private ResponseEntity removeCloseFriend(@RequestHeader (value = "userId") String userId, @RequestBody CloseFriendRequestDTO closeFriendRequestDTO){
         StatusResponse removeCloseFriendResponse = userService.removeCloseFriendByUserId(userId, closeFriendRequestDTO);
         return new ResponseEntity(removeCloseFriendResponse, removeCloseFriendResponse.getResponse());
+    }
+
+    @PutMapping("/changePassword")
+    private ResponseEntity changeUserPassword(@RequestHeader (value = "userId") String userId, @RequestBody ChangePasswordDTO changePasswordDTO){
+        StatusResponse changePasswordResponse = userService.changeUserPassword(userId, changePasswordDTO);
+        return new ResponseEntity(changePasswordResponse, changePasswordResponse.getResponse());
+    }
+
+    @PostMapping("/blockUser/{blockedUserId}")
+    private ResponseEntity blockUserByUserId(@RequestHeader (value = "userId") String userId, @PathVariable String blockedUserId){
+        StatusResponse blockUserResponse = userService.blockUserByUserId(userId, blockedUserId);
+        return new ResponseEntity(blockUserResponse, blockUserResponse.getResponse());
     }
 }

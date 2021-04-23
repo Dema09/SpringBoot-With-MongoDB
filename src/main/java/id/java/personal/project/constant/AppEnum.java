@@ -23,7 +23,13 @@ public enum AppEnum {
     YOUR_ACCOUNT_ALREADY_UNPROTECTED("Your account is already un-protected!"),
     SUCCESSFULLY_SET_YOUR_ACCOUNT_TO_UNPROTECTED("Successfully set your account to un-protected!"),
     SUCCESSFULLY_ADDED_CLOSE_FRIEND("Successfully added your close friend!"),
-    SUCCESSFULLY_REMOVE_CLOSE_FRIEND("Successfully remove your close friend!");
+    SUCCESSFULLY_REMOVE_CLOSE_FRIEND("Successfully remove your close friend!"),
+    OLD_PASSWORD_SAME_AS_NEW_PASSWORD("Your old password is same as your new password. Please consider to add another password!"),
+    YOUR_PASSWORD_DOES_NOT_MATCH_WITH_A_NEW_PASSWORD("Your password doesn't match with your new password!"),
+    SUCCESSFULLY_UPDATE_YOUR_PASSWORD("Successfully update your password!"),
+    INCORRECT_OLD_PASSWORD("Your old password is incorrect!"),
+    SUCCESSFULLY_ADD_USER_TO_BLOCK_LIST("Successfully added user into your blocklist!"),
+    YOU_CANNOT_BLOCK_YOURSELF("You can't block yourself!");
 
     private String message;
 

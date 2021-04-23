@@ -2,9 +2,11 @@ package id.java.personal.project.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
@@ -13,7 +15,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class AppConfig {
 
  @Bean
-    public PasswordEncoder passwordEncoder(){
+ @Primary
+ public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
 }

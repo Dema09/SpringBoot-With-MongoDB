@@ -6,7 +6,6 @@ public class ProfileDTO {
     private String username;
     private String nickname;
     private String address;
-    private String password;
     private MultipartFile profilePicture;
 
     public String getUsername() {
@@ -33,13 +32,6 @@ public class ProfileDTO {
         this.address = address;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public MultipartFile getProfilePicture() {
         return profilePicture;

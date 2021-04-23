@@ -24,4 +24,8 @@ public interface UserService {
     StatusResponse insertCloseFriend(String userId, CloseFriendRequestDTO closeFriendRequestDTO);
 
     StatusResponse removeCloseFriendByUserId(String userId, CloseFriendRequestDTO closeFriendRequestDTO);
+
+    StatusResponse changeUserPassword(String userId, ChangePasswordDTO changePasswordDTO);
+
+    StatusResponse blockUserByUserId(String userId, String blockedUserId);
 }

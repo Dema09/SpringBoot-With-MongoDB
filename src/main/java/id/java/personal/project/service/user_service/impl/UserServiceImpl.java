@@ -2,14 +2,8 @@ package id.java.personal.project.service.user_service.impl;
 
 import id.java.personal.project.constant.AppEnum;
 import id.java.personal.project.constant.RoleEnum;
-import id.java.personal.project.dao.FollowerAndFollowingRepository;
-import id.java.personal.project.dao.RoleRepository;
-import id.java.personal.project.dao.UserCloseFriendRepository;
-import id.java.personal.project.dao.UserRepository;
-import id.java.personal.project.domain.DummyUser;
-import id.java.personal.project.domain.DummyUserRole;
-import id.java.personal.project.domain.FollowerAndFollowing;
-import id.java.personal.project.domain.UserCloseFriend;
+import id.java.personal.project.dao.*;
+import id.java.personal.project.domain.*;
 import id.java.personal.project.dto.request.*;
 import id.java.personal.project.dto.response.LoginResponse;
 import id.java.personal.project.dto.response.ProfileResponse;
@@ -50,6 +44,7 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final FollowerAndFollowingRepository followerAndFollowingRepository;
     private final UserCloseFriendRepository userCloseFriendRepository;
+    private final BlockUserRepository blockUserRepository;
     private final JwtUtils jwtUtils;
 
     SimpleDateFormat sdf = new SimpleDateFormat(AppEnum.DATE_FORMAT.getMessage());
@@ -61,6 +56,7 @@ public class UserServiceImpl implements UserService {
                            AuthenticationManager authenticationManager,
                            RoleRepository roleRepository,
                            FollowerAndFollowingRepository followerAndFollowingRepository,
+                           BlockUserRepository blockUserRepository,
                            UserCloseFriendRepository userCloseFriendRepository,
                            JwtUtils jwtUtils
                            ) {
@@ -71,6 +67,7 @@ public class UserServiceImpl implements UserService {
         this.roleRepository = roleRepository;
         this.followerAndFollowingRepository = followerAndFollowingRepository;
         this.userCloseFriendRepository = userCloseFriendRepository;
+        this.blockUserRepository = blockUserRepository;
         this.jwtUtils = jwtUtils;
     }
 
@@ -111,7 +108,6 @@ public class UserServiceImpl implements UserService {
 
         currentUser.setUsername(profileDTO.getUsername());
         currentUser.setAddress(profileDTO.getAddress());
-        currentUser.setPassword(passwordEncoder.encode(profileDTO.getPassword()));
         currentUser.setProfilePicture(profileDTO.getProfilePicture().getOriginalFilename());
         currentUser.setNickname(profileDTO.getNickname());
         convertProfilePicture(profileDTO.getProfilePicture().getBytes(), profileDTO.getProfilePicture());
@@ -239,6 +235,62 @@ public class UserServiceImpl implements UserService {
         userCloseFriendRepository.save(currentUserCloseFriend);
         return statusResponse.statusOk(SUCCESSFULLY_REMOVE_CLOSE_FRIEND.getMessage());
 
+    }
+
+    @Override
+    public StatusResponse changeUserPassword(String userId, ChangePasswordDTO changePasswordDTO) {
+        StatusResponse statusResponse = new StatusResponse();
+
+        DummyUser currentUser = userRepository.findOne(userId);
+        if(currentUser == null)
+            return statusResponse.statusNotFound(USER_DATA_NOT_FOUND.getMessage(), null);
+
+
+        String checkPassword = validate(currentUser.getPassword(), changePasswordDTO);
+        if(!checkPassword.equals(""))
+            return statusResponse.statusInternalServerError(checkPassword, null);
+
+        currentUser.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
+        userRepository.save(currentUser);
+
+        return statusResponse.statusOk(SUCCESSFULLY_UPDATE_YOUR_PASSWORD.getMessage());
+    }
+
+    @Override
+    public StatusResponse blockUserByUserId(String userId, String blockedUserId) {
+        StatusResponse statusResponse = new StatusResponse();
+        List<DummyUser> blockedUsers = new ArrayList<>();
+
+        DummyUser currentUser = userRepository.findOne(userId);
+        DummyUser blockedUser = userRepository.findOne(blockedUserId);
+
+        if(blockedUser == null || currentUser == null)
+            return statusResponse.statusNotFound(USER_DATA_NOT_FOUND.getMessage(), null);
+
+        if(currentUser.getId().equals(blockedUser.getId()))
+            return statusResponse.statusBadRequest(YOU_CANNOT_BLOCK_YOURSELF.getMessage(), null);
+
+        blockedUsers.add(blockedUser);
+
+        BlockUser blockUser = new BlockUser();
+        blockUser.setCurrentUser(currentUser);
+        blockUser.setDummyUsers(blockedUsers);
+
+        blockUserRepository.save(blockUser);
+        return statusResponse.statusOk(SUCCESSFULLY_ADD_USER_TO_BLOCK_LIST.getMessage());
+    }
+
+    private String validate(String password, ChangePasswordDTO changePasswordDTO) {
+        if(passwordEncoder.matches(changePasswordDTO.getNewPassword() , password))
+            return OLD_PASSWORD_SAME_AS_NEW_PASSWORD.getMessage();
+
+        if(!changePasswordDTO.getNewPassword().equals(changePasswordDTO.getConfirmPassword()))
+            return YOUR_PASSWORD_DOES_NOT_MATCH_WITH_A_NEW_PASSWORD.getMessage();
+
+        if(!passwordEncoder.matches(changePasswordDTO.getOldPassword() , password))
+            return INCORRECT_OLD_PASSWORD.getMessage();
+
+        return "";
     }
 
     private void insertToCloseFriendData(DummyUser currentUser, UserCloseFriend userCloseFriend, CloseFriendRequestDTO closeFriendRequestDTO) {
