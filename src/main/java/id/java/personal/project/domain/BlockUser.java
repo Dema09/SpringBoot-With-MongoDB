@@ -1,6 +1,7 @@
 package id.java.personal.project.domain;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -11,8 +12,9 @@ public class BlockUser {
     @Id
     private String blockId;
 
-    private List<DummyUser> dummyUsers;
+    private List<String> dummyUserIdList;
 
+    @DBRef
     private DummyUser currentUser;
 
     public String getBlockId() {
@@ -23,12 +25,12 @@ public class BlockUser {
         this.blockId = blockId;
     }
 
-    public List<DummyUser> getDummyUsers() {
-        return dummyUsers;
+    public List<String> getDummyUserIdList() {
+        return dummyUserIdList;
     }
 
-    public void setDummyUsers(List<DummyUser> dummyUsers) {
-        this.dummyUsers = dummyUsers;
+    public void setDummyUserIdList(List<String> dummyUserIdList) {
+        this.dummyUserIdList = dummyUserIdList;
     }
 
     public DummyUser getCurrentUser() {

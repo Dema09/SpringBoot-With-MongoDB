@@ -75,4 +75,10 @@ public class UserController {
         StatusResponse blockUserResponse = userService.blockUserByUserId(userId, blockedUserId);
         return new ResponseEntity(blockUserResponse, blockUserResponse.getResponse());
     }
+
+    @PostMapping("/unblockUser/{unblockUserId}")
+    private ResponseEntity unblockUserByUserId(@RequestHeader (value = "userId") String userId, @PathVariable String unblockUserId){
+        StatusResponse unblockUserResponse = userService.unblockUserByUserId(userId, unblockUserId);
+        return new ResponseEntity(unblockUserResponse, unblockUserResponse.getResponse());
+    }
 }

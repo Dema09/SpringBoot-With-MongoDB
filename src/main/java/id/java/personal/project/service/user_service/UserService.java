@@ -28,4 +28,6 @@ public interface UserService {
     StatusResponse changeUserPassword(String userId, ChangePasswordDTO changePasswordDTO);
 
     StatusResponse blockUserByUserId(String userId, String blockedUserId);
+
+    StatusResponse unblockUserByUserId(String userId, String unblockUserId);
 }

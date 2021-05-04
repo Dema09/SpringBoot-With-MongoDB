@@ -259,7 +259,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public StatusResponse blockUserByUserId(String userId, String blockedUserId) {
         StatusResponse statusResponse = new StatusResponse();
-        List<DummyUser> blockedUsers = new ArrayList<>();
+        List<String> blockedUsers = new ArrayList<>();
 
         DummyUser currentUser = userRepository.findOne(userId);
         DummyUser blockedUser = userRepository.findOne(blockedUserId);
@@ -270,14 +270,68 @@ public class UserServiceImpl implements UserService {
         if(currentUser.getId().equals(blockedUser.getId()))
             return statusResponse.statusBadRequest(YOU_CANNOT_BLOCK_YOURSELF.getMessage(), null);
 
-        blockedUsers.add(blockedUser);
+        blockedUsers.add(blockedUserId);
 
-        BlockUser blockUser = new BlockUser();
+        BlockUser currentBlockUser = blockUserRepository.findBlockUserByCurrentUser(currentUser);
+        if(currentBlockUser == null)
+            insertBlockedUser(new BlockUser(), blockedUsers, currentUser);
+        else{
+            boolean validateUserIfExistInBlockList = validateIfUserIsInBlockListOrNot(blockedUserId, currentBlockUser.getDummyUserIdList());
+            if(!validateUserIfExistInBlockList)
+                insertBlockedUser(currentBlockUser, blockedUsers, currentUser);
+            else
+                return statusResponse.statusNotModified(YOU_ALREADY_BLOCK_THIS_USER_WITH_ID.getMessage() + blockedUserId, null);
+        }
+        return statusResponse.statusOk(SUCCESSFULLY_ADD_USER_TO_BLOCK_LIST.getMessage());
+    }
+
+    private boolean validateIfUserIsInBlockListOrNot(String blockedUserId, List<String> dummyUserIdList) {
+        boolean userIsExist = false;
+        if(dummyUserIdList == null)
+            return false;
+
+        for(String currentDummyUserId : dummyUserIdList){
+            if(blockedUserId.equals(currentDummyUserId)){
+                userIsExist = true;
+                break;
+            }
+        }
+        return userIsExist;
+    }
+
+    @Override
+    public StatusResponse unblockUserByUserId(String userId, String unblockUserId) {
+        StatusResponse statusResponse = new StatusResponse();
+
+        DummyUser currentUser = userRepository.findOne(userId);
+        if(currentUser == null)
+            return statusResponse.statusNotFound(USER_DATA_NOT_FOUND.getMessage(), null);
+
+        DummyUser userWhoWantToUnblock = userRepository.findOne(unblockUserId);
+        if(userWhoWantToUnblock == null)
+            return statusResponse.statusNotFound(NO_USER_FOUND_TO_UNBLOCK.getMessage(), null);
+
+        BlockUser blockUser = blockUserRepository.findBlockUserByCurrentUser(currentUser);
+
+        Iterator<String> blockUserIterator = blockUser.getDummyUserIdList().iterator();
+            while(blockUserIterator.hasNext()){
+                String userIdWhoWantToRemoveFromBlockList = blockUserIterator.next();
+                if(unblockUserId.equals(userIdWhoWantToRemoveFromBlockList)){
+                    blockUserIterator.remove();
+                    break;
+
+            }
+        }
+        blockUser.setDummyUserIdList(blockUser.getDummyUserIdList());
+        blockUserRepository.save(blockUser);
+        return statusResponse.statusOk(SUCCESSFULLY_REMOVE_USER_FROM_BLOCK_USER_WITH_ID.getMessage() + unblockUserId);
+    }
+
+    private void insertBlockedUser(BlockUser blockUser, List<String> blockUsers , DummyUser currentUser) {
         blockUser.setCurrentUser(currentUser);
-        blockUser.setDummyUsers(blockedUsers);
+        blockUser.setDummyUserIdList(blockUsers);
 
         blockUserRepository.save(blockUser);
-        return statusResponse.statusOk(SUCCESSFULLY_ADD_USER_TO_BLOCK_LIST.getMessage());
     }
 
     private String validate(String password, ChangePasswordDTO changePasswordDTO) {

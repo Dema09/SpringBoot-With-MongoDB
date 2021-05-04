@@ -29,7 +29,10 @@ public enum AppEnum {
     SUCCESSFULLY_UPDATE_YOUR_PASSWORD("Successfully update your password!"),
     INCORRECT_OLD_PASSWORD("Your old password is incorrect!"),
     SUCCESSFULLY_ADD_USER_TO_BLOCK_LIST("Successfully added user into your blocklist!"),
-    YOU_CANNOT_BLOCK_YOURSELF("You can't block yourself!");
+    YOU_CANNOT_BLOCK_YOURSELF("You can't block yourself!"),
+    NO_USER_FOUND_TO_UNBLOCK("No user found to unblock! Please check again!"),
+    SUCCESSFULLY_REMOVE_USER_FROM_BLOCK_USER_WITH_ID("Successfully remove user from block user with id: "),
+    YOU_ALREADY_BLOCK_THIS_USER_WITH_ID("You already block this user with id: ");
 
     private String message;
 
