@@ -48,7 +48,6 @@ public class AdminServiceImpl implements AdminService {
         UserResponseWithAge userResponseWithAge = new UserResponseWithAge();
         userResponseWithAge.setUserId(currentDummyUser.getId());
         userResponseWithAge.setUsername(currentDummyUser.getUsername());
-        userResponseWithAge.setAddress(currentDummyUser.getAddress());
         userResponseWithAge.setUserRole(currentDummyUser.getDummyUserRole().getUserRole());
         userResponseWithAge.setUserAge(calculateUserAge(currentDummyUser.getDateOfBirth()));
 
@@ -68,7 +67,6 @@ public class AdminServiceImpl implements AdminService {
             UserResponseWithAge userResponseWithAge = new UserResponseWithAge();
             userResponseWithAge.setUserId(dummyUser.getId());
             userResponseWithAge.setUsername(dummyUser.getUsername());
-            userResponseWithAge.setAddress(dummyUser.getAddress());
             userResponseWithAge.setUserRole(dummyUser.getDummyUserRole().getUserRole());
             userResponseWithAge.setUserAge(calculateUserAge(dummyUser.getDateOfBirth()));
 

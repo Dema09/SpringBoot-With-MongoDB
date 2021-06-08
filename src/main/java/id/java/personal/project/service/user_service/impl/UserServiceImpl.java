@@ -45,6 +45,7 @@ public class UserServiceImpl implements UserService {
     private final FollowerAndFollowingRepository followerAndFollowingRepository;
     private final UserCloseFriendRepository userCloseFriendRepository;
     private final BlockUserRepository blockUserRepository;
+    private final PostRepository postRepository;
     private final JwtUtils jwtUtils;
 
     SimpleDateFormat sdf = new SimpleDateFormat(AppEnum.DATE_FORMAT.getMessage());
@@ -58,6 +59,7 @@ public class UserServiceImpl implements UserService {
                            FollowerAndFollowingRepository followerAndFollowingRepository,
                            BlockUserRepository blockUserRepository,
                            UserCloseFriendRepository userCloseFriendRepository,
+                           PostRepository postRepository,
                            JwtUtils jwtUtils
                            ) {
         this.userRepository = userRepository;
@@ -68,6 +70,7 @@ public class UserServiceImpl implements UserService {
         this.followerAndFollowingRepository = followerAndFollowingRepository;
         this.userCloseFriendRepository = userCloseFriendRepository;
         this.blockUserRepository = blockUserRepository;
+        this.postRepository = postRepository;
         this.jwtUtils = jwtUtils;
     }
 
@@ -118,25 +121,74 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public StatusResponse getUserDataProfileById(String userId) throws IOException {
+    public StatusResponse getUserDataProfileById(String userId, String currentUserId) throws IOException {
         ProfileResponse profileResponse = new ProfileResponse();
         StatusResponse statusResponse = new StatusResponse();
 
-        DummyUser currentUser = userRepository.findOne(userId);
+        DummyUser currentUser = userRepository.findOne(currentUserId);
         if(currentUser == null)
+            return statusResponse.statusBadRequest("Data with id: " + currentUserId + " is not exists!", null);
+
+        DummyUser userWhoCheckedByCurrentUser = userRepository.findOne(userId);
+        if(userWhoCheckedByCurrentUser == null)
             return statusResponse.statusNotFound("Data with id: " + userId + " is not exists!", null);
 
-        FollowerAndFollowing followerAndFollowing = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(currentUser);
+        FollowerAndFollowing followerAndFollowing = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(userWhoCheckedByCurrentUser);
 
-        profileResponse.setUserId(currentUser.getId());
-        profileResponse.setUsername(currentUser.getUsername());
-        profileResponse.setAddress(currentUser.getAddress());
-        profileResponse.setUserProfilePicture(currentUser.getProfilePicture() == null ? "" : getImage(currentUser.getProfilePicture()));
-        profileResponse.setUserRole(currentUser.getDummyUserRole().getUserRole());
-        profileResponse.setNumberOfFollowers(followerAndFollowing.getFollowers() == null ? 0 : followerAndFollowing.getFollowers().size());
-        profileResponse.setNumberOfFollowings(followerAndFollowing.getFollowings() == null ? 0 : followerAndFollowing.getFollowings().size());
+        boolean isPrivateAccount = checkPrivateAccount(userWhoCheckedByCurrentUser);
+        boolean isCurrentUserAlreadyFollowingCheckedUser = checkCurrentUserAlreadyFollowingCheckedUser(userWhoCheckedByCurrentUser, currentUser);
+
+        if((isPrivateAccount && !isCurrentUserAlreadyFollowingCheckedUser) && !currentUser.getId().equals(userWhoCheckedByCurrentUser.getId()))
+            setProfileResponseWhenSomeoneSeePrivateAccount(profileResponse, userWhoCheckedByCurrentUser, followerAndFollowing);
+        else
+            setProfileResponseWhenSomeOneSeeNonPrivateAccountAndItsProfile(profileResponse, userWhoCheckedByCurrentUser, followerAndFollowing);
 
         return statusResponse.statusOk(profileResponse);
+    }
+
+    private void setProfileResponseWhenSomeOneSeeNonPrivateAccountAndItsProfile(ProfileResponse profileResponse, DummyUser userWhoCheckedByCurrentUser, FollowerAndFollowing followerAndFollowing) throws IOException {
+        Post currentUserPost = postRepository.findPostByDummyUser(userWhoCheckedByCurrentUser);
+
+        profileResponse.setUserId(userWhoCheckedByCurrentUser.getId());
+        profileResponse.setUsername(userWhoCheckedByCurrentUser.getUsername());
+        profileResponse.setNickName(userWhoCheckedByCurrentUser.getNickname());
+        profileResponse.setUserProfilePicture(userWhoCheckedByCurrentUser.getProfilePicture() == null ? "" : getImage(userWhoCheckedByCurrentUser.getProfilePicture()));
+        profileResponse.setUserRole(userWhoCheckedByCurrentUser.getDummyUserRole().getUserRole());
+        profileResponse.setNumberOfPosts(currentUserPost.getPostPicture().size() == 0 ? 0 : currentUserPost.getPostPicture().size());
+        profileResponse.setNumberOfFollowers(followerAndFollowing.getFollowers() == null ? 0 : followerAndFollowing.getFollowers().size());
+        profileResponse.setNumberOfFollowings(followerAndFollowing.getFollowings() == null ? 0 : followerAndFollowing.getFollowings().size());
+    }
+
+    private boolean checkCurrentUserAlreadyFollowingCheckedUser(DummyUser userWhoCheckedByCurrentUser, DummyUser currentUser) {
+        boolean isFound = false;
+
+        FollowerAndFollowing currentUserFollowerAndFollowing = followerAndFollowingRepository.findFollowerAndFollowingByDummyUser(currentUser);
+        if(currentUserFollowerAndFollowing.getFollowings() == null || currentUserFollowerAndFollowing.getFollowings().size() == 0)
+            return isFound;
+
+        for(DummyUser dummyUser : currentUserFollowerAndFollowing.getFollowings()){
+            if(dummyUser.getId().equals(userWhoCheckedByCurrentUser.getId())){
+                isFound = true;
+                break;
+            }
+        }
+        return isFound;
+    }
+
+    private void setProfileResponseWhenSomeoneSeePrivateAccount(ProfileResponse profileResponse, DummyUser currentUser, FollowerAndFollowing followerAndFollowing) {
+        Post currentPost = postRepository.findPostByDummyUser(currentUser);
+
+        profileResponse.setUsername(currentUser.getUsername());
+        profileResponse.setNumberOfFollowers(followerAndFollowing.getFollowers().size() == 0 ? 0 : followerAndFollowing.getFollowers().size());
+        profileResponse.setNumberOfFollowings(followerAndFollowing.getFollowings().size()== 0 ? 0 : followerAndFollowing.getFollowings().size());
+        profileResponse.setNumberOfPosts(currentPost.getPostPicture().size() == 0 ? 0 : currentPost.getPostPicture().size());
+    }
+
+    private boolean checkPrivateAccount(DummyUser currentUser) {
+        boolean isPrivateAccount = false;
+        if(currentUser.isProtectedAccount() == true)
+            isPrivateAccount = true;
+        return isPrivateAccount;
     }
 
     @Override

@@ -35,8 +35,8 @@ public class UserController {
     }
 
     @GetMapping(value = "/getUserProfile/{userId}")
-    private ResponseEntity getUserProfile(@PathVariable String userId) throws IOException {
-        StatusResponse profileResponse = userService.getUserDataProfileById(userId);
+    private ResponseEntity getUserProfile(@PathVariable String userId, @RequestHeader String currentUserId) throws IOException {
+        StatusResponse profileResponse = userService.getUserDataProfileById(userId, currentUserId);
         return new ResponseEntity(profileResponse, profileResponse.getResponse());
     }
 

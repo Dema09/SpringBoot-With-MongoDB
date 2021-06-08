@@ -13,7 +13,7 @@ public interface UserService {
 
     StatusResponse updateUserDataByUserId(String userId, ProfileDTO profileDTO) throws IOException;
 
-    StatusResponse getUserDataProfileById(String userId) throws IOException;
+    StatusResponse getUserDataProfileById(String userId, String currentUserId) throws IOException;
 
     StatusResponse loginUser(LoginDTO loginDTO);
 

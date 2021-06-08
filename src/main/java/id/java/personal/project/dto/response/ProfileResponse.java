@@ -2,6 +2,7 @@ package id.java.personal.project.dto.response;
 
 public class ProfileResponse extends UserResponse{
     private String userProfilePicture;
+    private Integer numberOfPosts;
     private Integer numberOfFollowers;
     private Integer numberOfFollowings;
 
@@ -11,6 +12,14 @@ public class ProfileResponse extends UserResponse{
 
     public void setUserProfilePicture(String userProfilePicture) {
         this.userProfilePicture = userProfilePicture;
+    }
+
+    public Integer getNumberOfPosts() {
+        return numberOfPosts;
+    }
+
+    public void setNumberOfPosts(Integer numberOfPosts) {
+        this.numberOfPosts = numberOfPosts;
     }
 
     public Integer getNumberOfFollowers() {
