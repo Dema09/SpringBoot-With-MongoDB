@@ -1,4 +1,4 @@
-package id.java.personal.project.controller;
+package id.java.personal.project.controller.login_controller;
 
 import id.java.personal.project.dto.request.LoginDTO;
 import id.java.personal.project.dto.response.error.StatusResponse;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/auth")
 public class LoginController {
 
     private final UserService userService;

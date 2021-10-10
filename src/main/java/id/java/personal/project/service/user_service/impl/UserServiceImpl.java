@@ -10,15 +10,16 @@ import id.java.personal.project.dto.response.ProfileResponse;
 import id.java.personal.project.dto.response.error.StatusResponse;
 import id.java.personal.project.security.jwt.JwtUtils;
 import id.java.personal.project.security.service.UserDetailsImpl;
+import id.java.personal.project.service.user_service.RestTemplateService;
 import id.java.personal.project.service.user_service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,6 +48,7 @@ public class UserServiceImpl implements UserService {
     private final BlockUserRepository blockUserRepository;
     private final PostRepository postRepository;
     private final JwtUtils jwtUtils;
+    private final RestTemplateService restTemplateService;
 
     SimpleDateFormat sdf = new SimpleDateFormat(AppEnum.DATE_FORMAT.getMessage());
 
@@ -60,7 +62,8 @@ public class UserServiceImpl implements UserService {
                            BlockUserRepository blockUserRepository,
                            UserCloseFriendRepository userCloseFriendRepository,
                            PostRepository postRepository,
-                           JwtUtils jwtUtils
+                           JwtUtils jwtUtils,
+                           RestTemplateService restTemplateService
                            ) {
         this.userRepository = userRepository;
         this.env = env;
@@ -72,6 +75,7 @@ public class UserServiceImpl implements UserService {
         this.blockUserRepository = blockUserRepository;
         this.postRepository = postRepository;
         this.jwtUtils = jwtUtils;
+        this.restTemplateService = restTemplateService;
     }
 
     @Override
@@ -200,17 +204,16 @@ public class UserServiceImpl implements UserService {
         authorities.add(new SimpleGrantedAuthority(userData.getDummyUserRole().getUserRole()));
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword(), authorities));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
-
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         LoginResponse loginResponse = new LoginResponse();
+
+        String json = restTemplateService.retrieveOauthToken(userData).toString();
 
         loginResponse.setId(userDetails.getId());
         loginResponse.setUsername(userDetails.getUsername());
         loginResponse.setEmail(userDetails.getEmail());
         loginResponse.setRoles(userData.getDummyUserRole().getUserRole());
-        loginResponse.setAccessToken(jwt);
+
 
         return statusResponse.statusOk(loginResponse);
 

@@ -32,7 +32,9 @@ public enum AppEnum {
     YOU_CANNOT_BLOCK_YOURSELF("You can't block yourself!"),
     NO_USER_FOUND_TO_UNBLOCK("No user found to unblock! Please check again!"),
     SUCCESSFULLY_REMOVE_USER_FROM_BLOCK_USER_WITH_ID("Successfully remove user from block user with id: "),
-    YOU_ALREADY_BLOCK_THIS_USER_WITH_ID("You already block this user with id: ");
+    YOU_ALREADY_BLOCK_THIS_USER_WITH_ID("You already block this user with id: "),
+    CLIENT_ID("client_id"),
+    CLIENT_SECRET("client_secret");
 
     private String message;
 

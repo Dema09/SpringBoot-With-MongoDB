@@ -81,4 +81,5 @@ public class UserController {
         StatusResponse unblockUserResponse = userService.unblockUserByUserId(userId, unblockUserId);
         return new ResponseEntity(unblockUserResponse, unblockUserResponse.getResponse());
     }
+
 }
